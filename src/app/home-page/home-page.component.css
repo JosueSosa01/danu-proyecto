@@ -1,0 +1,19 @@
+.info-section {
+  background-color: #0a0a32;
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.info-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.info-section p {
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
