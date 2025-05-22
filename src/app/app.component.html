@@ -1,4 +1,4 @@
-<!-- Header fijo -->
+<!-- src/app/app.component.html -->
 <header class="header">
   <div class="logo-container">
     <img
@@ -9,11 +9,12 @@
   </div>
 
   <nav class="nav">
-  <a routerLink="/home" routerLinkActive="active">Inicio</a>
-  <a routerLink="/resultados" routerLinkActive="active">Resultados</a>
+    <a *ngFor="let link of navLinks"
+       [routerLink]="link.path"
+       routerLinkActive="active">
+      {{ link.label }}
+    </a>
   </nav>
-
 </header>
 
-<!-- Aquí cambia el contenido de cada ruta -->
 <router-outlet></router-outlet>

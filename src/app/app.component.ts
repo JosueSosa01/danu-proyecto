@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { NgFor } from '@angular/common'; // Necesario para *ngFor
+
+import { NAV_LINKS } from './nav-links';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [RouterModule, NgFor], // <- ¡IMPORTANTE!
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'danu-proyecto';
+  navLinks = NAV_LINKS;
 }

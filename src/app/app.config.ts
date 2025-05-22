@@ -1,10 +1,9 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, withHashLocation } from '@angular/router';
+// src/app/app.config.ts
+import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 
-export const appConfig: ApplicationConfig = {
+export const appConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withHashLocation())  // ← Aquí activas el uso de #
+    provideRouter(routes)
   ]
 };
