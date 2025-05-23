@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 982.29 522.14">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 118.79px;
+      }
+
+      .cls-1, .cls-2 {
+        font-family: Poppins-Bold, Poppins;
+        font-weight: 700;
+      }
+
+      .cls-2 {
+        font-size: 73.19px;
+      }
+    </style>
+  </defs>
+  <image width="1024" height="1024" transform="scale(.48)" xlink:href="../Library/CloudStorage/OneDrive-Personal/Escuela/ITESM/Carrera/Semestre 6/icono logo.png"/>
+  <text class="cls-1" transform="translate(375.97 227.61)"><tspan x="0" y="0">Insight </tspan><tspan x="0" y="142.54">Analytics</tspan></text>
+  <text class="cls-2" transform="translate(118.19 477.79)"><tspan x="0" y="0">From Data to Decisions</tspan></text>
+</svg>
