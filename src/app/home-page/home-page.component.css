@@ -11,7 +11,7 @@
       font-size: 1.8rem;
       font-weight: bold;
       span {
-        color: #6544ff;
+        color: #2caefc;
       }
     }
 
@@ -28,16 +28,16 @@
           font-weight: 500;
 
           &:hover {
-            color: #6544ff;
+            color: #2caefc;
           }
         }
 
         .btn-outline {
           background: transparent;
-          border: 2px solid #6544ff;
+          border: 2px solid #2caefc;
           border-radius: 30px;
           padding: 0.5rem 1rem;
-          color: #6544ff;
+          color: #2caefc;
           cursor: pointer;
         }
       }
@@ -60,7 +60,7 @@
         margin-bottom: 1rem;
 
         span {
-          color: #6544ff;
+          color: #2caefc;
         }
       }
 
@@ -71,7 +71,7 @@
       }
 
       .btn-primary {
-        background-color: #6544ff;
+        background-color: #2caefc;
         color: white;
         padding: 0.75rem 1.5rem;
         border: none;
