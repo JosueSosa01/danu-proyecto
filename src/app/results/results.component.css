@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar .nav-link {
+  font-size: 15px;
+  padding: 10px 15px;
+  transition: background-color 0.2s ease;
+  color: white;
+}
+
+.sidebar .nav-link:hover {
+  background-color: #2caefc !important;
+  color: #fff !important;
+}
+
+.sidebar input::placeholder {
+  color: #ccc;
+}
+
+/* Dropdown personalizado */
+.sidebar .dropdown-menu {
+  background-color: #1d1d1d;
+  border: none;
+  padding-left: 0;
+}
+
+.sidebar .dropdown-item {
+  font-size: 14px;
+  padding: 8px 30px;
+  color: white;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar .dropdown-item:hover {
+  background-color: #2caefc;
+  color: #fff;
+}
+
+.sidebar .dropdown-toggle:focus {
+  box-shadow: none;
+}
