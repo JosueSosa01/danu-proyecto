@@ -9,6 +9,6 @@ export const routes: Routes = [
   { path: 'home', component: HomePageComponent },
   { path: 'resultados', component: ResultsComponent },
   { path: 'login', component: LoginComponent},
-  { path: '', redirectTo: '/home-page', pathMatch: 'full' },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/home-page' }
 ];
