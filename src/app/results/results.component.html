@@ -57,31 +57,42 @@
     </div>
 
     <div *ngIf="activeSection === 'fileManager'">
-  <h2>Gestión de archivos</h2>
-  <p>Contenido del archivo precargado:</p>
+      <h2>Gestión de archivos</h2>
+      <p>Contenido del archivo precargado:</p>
 
-  <div *ngIf="csvData.length > 0">
-    <h5>Contenido del archivo:</h5>
+      <div *ngIf="filteredData.length > 0">
+        <h5>Contenido del archivo:</h5>
 
-    <div class="csv-scroll-container">
-      <div class="csv-scroll-inner">
-        <table class="table table-bordered table-sm table-striped table-hover">
-          <thead class="table-light sticky-top">
-            <tr>
-              <th *ngFor="let header of csvHeaders" class="text-nowrap">{{ header }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of csvData">
-              <td *ngFor="let cell of row" class="text-nowrap">{{ cell }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="csv-scroll-container">
+          <div class="csv-scroll-inner">
+            <table class="table table-bordered table-sm table-striped table-hover">
+              <thead class="table-light sticky-top">
+                <tr>
+                  <th *ngFor="let header of csvHeaders; let i = index; trackBy: trackByIndex" class="text-nowrap">
+                    {{ header }}
+                    <select class="form-select form-select-sm mt-1"
+                            [(ngModel)]="columnFilters[header]"
+                            (change)="applyFilters()">
+                      <option value="">(Todos)</option>
+                      <option *ngFor="let value of getUniqueValuesForColumn(i)" [value]="value">
+                        {{ value }}
+                      </option>
+                    </select>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of filteredData; trackBy: trackByIndex">
+                  <td *ngFor="let cell of row; trackBy: trackByIndex" class="text-nowrap">
+                    {{ cell }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
 
     <div *ngIf="activeSection === 'user'">
       <h1>Perfil de usuario</h1>
