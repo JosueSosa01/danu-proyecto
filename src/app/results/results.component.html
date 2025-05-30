@@ -1,4 +1,3 @@
-<!-- src/app/results.component.html -->
 <div class="d-flex">
   <!-- Sidebar -->
   <div class="sidebar bg-dark text-white d-flex flex-column p-3" style="width: 220px; height: 100vh;">
@@ -25,7 +24,8 @@
         <ul class="dropdown-menu dropdown-menu-dark w-100" aria-labelledby="dropdownAnalytics">
           <li><a class="dropdown-item text-white" href="#">Gráficas</a></li>
           <li><a class="dropdown-item text-white" href="#">Modelo</a></li>
-          <li><a class="dropdown-item text-white" href="#">Mapa</a></li>
+          <li><a class="dropdown-item text-white" href="#" (click)="setSection('dashboard')">Mapa NL</a></li>
+          <li><a class="dropdown-item text-white" href="#" (click)="setSection('dashboard-nacional')">Mapa Nacional</a></li>
         </ul>
       </li>
 
@@ -51,11 +51,50 @@
 
   <!-- Main content -->
   <div class="p-4 flex-grow-1">
+
+    <!-- Dashboard NL -->
     <div *ngIf="activeSection === 'dashboard'">
-      <h1>Bienvenido</h1>
+      <h1>Centros de distribución de Nuevo León</h1>
       <p>Este es tu panel principal.</p>
+
+      <div class="mb-3">
+        <button class="btn btn-outline-primary me-2" (click)="setSection('dashboard')">Ver NL</button>
+        <button class="btn btn-outline-secondary" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
+      </div>
+
+      <div class="map-container mt-4" style="height: 600px;">
+        <iframe
+          width="100%"
+          height="100%"
+          style="border: none; border-radius: 12px;"
+          src="https://api.mapbox.com/styles/v1/nataliagquintanilla/cmbadctro016n01sdbtju3v3n.html?title=view&access_token=pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg&zoomwheel=true&fresh=true#11.15/25.7376/-100.2823"
+          allowfullscreen
+        ></iframe>
+      </div>
     </div>
 
+    <!-- Dashboard Nacional -->
+    <div *ngIf="activeSection === 'dashboard-nacional'">
+      <h1>Centros de distribución Nacional</h1>
+      <p>Visualización a nivel nacional.</p>
+
+      <div class="mb-3">
+        <button class="btn btn-outline-secondary me-2" (click)="setSection('dashboard')">Ver NL</button>
+        <button class="btn btn-outline-primary" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
+      </div>
+
+      <div class="map-container mt-4" style="height: 600px;">
+        <iframe
+          width="100%"
+          height="100%"
+          style="border: none; border-radius: 12px;"
+          src="https://api.mapbox.com/styles/v1/nataliagquintanilla/cmbadahuh009h01qoe5taeykn.html?title=view&access_token=pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg&zoomwheel=true&fresh=true#5.66/25.373/-100.349"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+
+    <!-- File Manager -->
     <div *ngIf="activeSection === 'fileManager'">
       <h2>Gestión de archivos</h2>
       <p>Contenido del archivo precargado:</p>
@@ -94,11 +133,13 @@
       </div>
     </div>
 
+    <!-- User -->
     <div *ngIf="activeSection === 'user'">
       <h1>Perfil de usuario</h1>
       <p>Sección de información del usuario.</p>
     </div>
 
+    <!-- Settings -->
     <div *ngIf="activeSection === 'settings'">
       <h1>Configuración</h1>
       <p>Preferencias del sistema.</p>

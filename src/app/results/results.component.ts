@@ -11,7 +11,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./results.component.css']
 })
 export class ResultsComponent {
-  activeSection: string = 'dashboard';
+  activeSection: string = 'dashboard';  // puede ser: 'dashboard', 'dashboard-nacional', 'fileManager', 'user', etc.
 
   csvHeaders: string[] = [];
   csvData: string[][] = [];
@@ -23,6 +23,7 @@ export class ResultsComponent {
   setSection(section: string): void {
     this.activeSection = section;
 
+    // Cargar el archivo CSV solo si se entra por primera vez a fileManager
     if (section === 'fileManager' && this.csvData.length === 0) {
       this.loadCsvFromAssets();
     }
