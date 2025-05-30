@@ -41,3 +41,39 @@ body {
 .sidebar .dropdown-toggle:focus {
   box-shadow: none;
 }
+
+/* Contenedor visible (ajustado a ancho específico) */
+.csv-scroll-container {
+  max-height: 500px;
+  max-width: 1000px; /* <-- Aquí controlas el tamaño horizontal */
+  overflow-x: auto;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  background-color: #fff;
+}
+
+/* Contenedor interno para evitar que la tabla se desborde */
+.csv-scroll-inner {
+  width: max-content; /* permite que la tabla fluya horizontalmente si es más grande */
+}
+
+/* Estilo adicional para celdas */
+.table td,
+.table th {
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+thead.sticky-top th {
+  background-color: #f8f9fa;  /* color claro del encabezado */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
