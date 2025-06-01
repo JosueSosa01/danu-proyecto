@@ -2,23 +2,18 @@
   <!-- Sidebar -->
   <div class="sidebar bg-dark text-white d-flex flex-column p-3" style="width: 220px; height: 100vh;">
     <h4 class="mb-4">Dashboard</h4>
-
     <div class="mb-3">
       <input type="text" class="form-control bg-secondary text-white border-0" placeholder="Search...">
     </div>
-
     <small class="text-muted text-uppercase">Navigation</small>
-
     <ul class="nav flex-column mt-2">
       <li class="nav-item">
         <button (click)="setSection('dashboard')" class="nav-link text-white bg-primary rounded mb-1 w-100 text-start">
           <i class="bi bi-house me-2"></i> Dashboard
         </button>
       </li>
-
       <li class="nav-item dropdown">
-        <button class="nav-link dropdown-toggle w-100 text-start bg-transparent border-0 text-white mb-1" type="button"
-                id="dropdownAnalytics" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="nav-link dropdown-toggle w-100 text-start bg-transparent border-0 text-white mb-1" type="button" id="dropdownAnalytics" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-pie-chart me-2"></i> Analytics
         </button>
         <ul class="dropdown-menu dropdown-menu-dark w-100" aria-labelledby="dropdownAnalytics">
@@ -28,19 +23,16 @@
           <li><a class="dropdown-item text-white" href="#" (click)="setSection('dashboard-nacional')">Mapa Nacional</a></li>
         </ul>
       </li>
-
       <li class="nav-item">
         <button class="nav-link text-white mb-1 w-100 text-start bg-transparent border-0" (click)="setSection('user')">
           <i class="bi bi-person me-2"></i> User
         </button>
       </li>
-
       <li class="nav-item">
         <button class="nav-link text-white mb-1 w-100 text-start bg-transparent border-0" (click)="setSection('fileManager')">
           <i class="bi bi-folder me-2"></i> File Manager
         </button>
       </li>
-
       <li class="nav-item">
         <button class="nav-link text-white mb-1 w-100 text-start bg-transparent border-0" (click)="setSection('settings')">
           <i class="bi bi-gear me-2"></i> Setting
@@ -51,25 +43,20 @@
 
   <!-- Main content -->
   <div class="p-4 flex-grow-1">
-
     <!-- Dashboard NL -->
     <div *ngIf="activeSection === 'dashboard'" class="d-flex">
       <div class="flex-grow-1" style="height: auto; position: relative;">
         <h1>Centros de distribución de Nuevo León</h1>
         <p>Este es tu panel principal.</p>
-
         <div class="mb-3">
           <button class="btn btn-outline-primary me-2" (click)="setSection('dashboard')">Ver NL</button>
           <button class="btn btn-outline-secondary" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
         </div>
-
-        <div class="card shadow-sm border-0 rounded-4 overflow-hidden" style="height: 200px;">
-          <div id="map" style="height: 120%; width: 50%;"></div>
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden" style="height: 320px;">
+          <div id="map" style="height: 100%; width: 100%;"></div>
         </div>
-
       </div>
-
-      <div *ngIf="selectedFeatureProps" class="bg-light border-start p-3" style="width: 320px; height: auto; overflow-y: auto;">
+      <div *ngIf="selectedFeatureProps" class="bg-light border-start p-3" style="width: 320px; height: 320px; overflow-y: auto;">
         <h5>Centro #{{ selectedFeatureProps['Centro_ID'] }}</h5>
         <p><strong>Latitud:</strong> {{ selectedFeatureProps['latitude'] }}</p>
         <p><strong>Longitud:</strong> {{ selectedFeatureProps['longitude'] }}</p>
@@ -78,23 +65,23 @@
     </div>
 
     <!-- Dashboard Nacional -->
-    <div *ngIf="activeSection === 'dashboard-nacional'">
-      <h1>Centros de distribución Nacional</h1>
-      <p>Visualización a nivel nacional.</p>
-
-      <div class="mb-3">
-        <button class="btn btn-outline-secondary me-2" (click)="setSection('dashboard')">Ver NL</button>
-        <button class="btn btn-outline-primary" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
+    <div *ngIf="activeSection === 'dashboard-nacional'" class="d-flex">
+      <div class="flex-grow-1" style="height: auto; position: relative; max-width: 50%;">
+        <h1>Centros de distribución Nacional</h1>
+        <p>Visualización a nivel nacional.</p>
+        <div class="mb-3">
+          <button class="btn btn-outline-secondary me-2" (click)="setSection('dashboard')">Ver NL</button>
+          <button class="btn btn-outline-primary" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
+        </div>
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden" style="height: 320px;">
+          <div id="mapNacional" style="height: 100%; width: 100%;"></div>
+        </div>
       </div>
-
-      <div class="map-container mt-4" style="height: 300px;">
-        <iframe
-          width="100%"
-          height="100%"
-          style="border: none; border-radius: 12px;"
-          src="https://api.mapbox.com/styles/v1/nataliagquintanilla/cmbadahuh009h01qoe5taeykn.html?title=view&access_token=pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg&zoomwheel=true&fresh=true#5.66/25.373/-100.349"
-          allowfullscreen>
-        </iframe>
+      <div *ngIf="selectedFeatureProps" class="bg-light border-start p-3" style="width: 320px; height: 320px; overflow-y: auto;">
+        <h5>Centro #{{ selectedFeatureProps['Centro_ID'] }}</h5>
+        <p><strong>Latitud:</strong> {{ selectedFeatureProps['latitude'] }}</p>
+        <p><strong>Longitud:</strong> {{ selectedFeatureProps['longitude'] }}</p>
+        <button class="btn btn-sm btn-outline-secondary mt-3" (click)="selectedFeatureProps = null">Cerrar</button>
       </div>
     </div>
 
@@ -102,10 +89,8 @@
     <div *ngIf="activeSection === 'fileManager'">
       <h2>Gestión de archivos</h2>
       <p>Contenido del archivo precargado:</p>
-
       <div *ngIf="filteredData.length > 0">
         <h5>Contenido del archivo:</h5>
-
         <div class="csv-scroll-container">
           <div class="csv-scroll-inner">
             <table class="table table-bordered table-sm table-striped table-hover">
@@ -113,22 +98,16 @@
                 <tr>
                   <th *ngFor="let header of csvHeaders; let i = index; trackBy: trackByIndex" class="text-nowrap">
                     {{ header }}
-                    <select class="form-select form-select-sm mt-1"
-                            [(ngModel)]="columnFilters[header]"
-                            (change)="applyFilters()">
+                    <select class="form-select form-select-sm mt-1" [(ngModel)]="columnFilters[header]" (change)="applyFilters()">
                       <option value="">(Todos)</option>
-                      <option *ngFor="let value of getUniqueValuesForColumn(i)" [value]="value">
-                        {{ value }}
-                      </option>
+                      <option *ngFor="let value of getUniqueValuesForColumn(i)" [value]="value">{{ value }}</option>
                     </select>
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let row of filteredData; trackBy: trackByIndex">
-                  <td *ngFor="let cell of row; trackBy: trackByIndex" class="text-nowrap">
-                    {{ cell }}
-                  </td>
+                  <td *ngFor="let cell of row; trackBy: trackByIndex" class="text-nowrap">{{ cell }}</td>
                 </tr>
               </tbody>
             </table>

@@ -12,14 +12,14 @@ import mapboxgl from 'mapbox-gl';
   styleUrls: ['./results.component.css']
 })
 export class ResultsComponent implements AfterViewInit {
-  activeSection: string = 'dashboard'; // default
-
+  activeSection: string = 'dashboard';
   csvHeaders: string[] = [];
   csvData: string[][] = [];
   filteredData: string[][] = [];
   columnFilters: { [key: string]: string } = {};
 
   map!: mapboxgl.Map;
+  mapNacional!: mapboxgl.Map;
   selectedFeatureProps: any = null;
 
   constructor(private http: HttpClient) {}
@@ -27,6 +27,8 @@ export class ResultsComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     if (this.activeSection === 'dashboard') {
       this.initializeMap();
+    } else if (this.activeSection === 'dashboard-nacional') {
+      this.initializeMapNacional();
     }
   }
 
@@ -39,6 +41,8 @@ export class ResultsComponent implements AfterViewInit {
 
     if (section === 'dashboard') {
       setTimeout(() => this.initializeMap(), 0);
+    } else if (section === 'dashboard-nacional') {
+      setTimeout(() => this.initializeMapNacional(), 0);
     }
   }
 
@@ -57,9 +61,7 @@ export class ResultsComponent implements AfterViewInit {
         const features = this.map.queryRenderedFeatures(e.point, {
           layers: ['centros-distribucion-nl-803fp6 copy']
         });
-
         if (!features.length || !features[0].properties) return;
-
         this.selectedFeatureProps = features[0].properties;
       });
 
@@ -73,14 +75,41 @@ export class ResultsComponent implements AfterViewInit {
     });
   }
 
+  initializeMapNacional(): void {
+    mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
+
+    this.mapNacional = new mapboxgl.Map({
+      container: 'mapNacional',
+      style: 'mapbox://styles/nataliagquintanilla/cmbaaszy401aw01qy84dyhja7',
+      center: [-102.5528, 23.6345],
+      zoom: 4.5
+    });
+
+    this.mapNacional.on('load', () => {
+      this.mapNacional.on('click', 'centros-distribucion-nacional', (e) => {
+        const features = this.mapNacional.queryRenderedFeatures(e.point, {
+          layers: ['centros-distribucion-nacional']
+        });
+        if (!features.length || !features[0].properties) return;
+        this.selectedFeatureProps = features[0].properties;
+      });
+
+      this.mapNacional.on('mouseenter', 'centros-distribucion-nacional', () => {
+        this.mapNacional.getCanvas().style.cursor = 'pointer';
+      });
+
+      this.mapNacional.on('mouseleave', 'centros-distribucion-nacional', () => {
+        this.mapNacional.getCanvas().style.cursor = '';
+      });
+    });
+  }
+
   loadCsvFromAssets(): void {
     this.http.get('assets/data/database_NL.csv', { responseType: 'text' }).subscribe({
       next: (data: string) => {
         const lines = data.split('\n').filter(line => line.trim() !== '');
         this.csvHeaders = lines[0].split(',').map(h => h.trim());
-        this.csvData = lines.slice(1).map(line =>
-          line.split(',').map(cell => cell.trim())
-        );
+        this.csvData = lines.slice(1).map(line => line.split(',').map(cell => cell.trim()));
         this.filteredData = [...this.csvData];
         this.csvHeaders.forEach(header => {
           this.columnFilters[header] = '';
