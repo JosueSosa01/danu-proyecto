@@ -53,23 +53,27 @@
   <div class="p-4 flex-grow-1">
 
     <!-- Dashboard NL -->
-    <div *ngIf="activeSection === 'dashboard'">
-      <h1>Centros de distribución de Nuevo León</h1>
-      <p>Este es tu panel principal.</p>
+    <div *ngIf="activeSection === 'dashboard'" class="d-flex">
+      <div class="flex-grow-1" style="height: auto; position: relative;">
+        <h1>Centros de distribución de Nuevo León</h1>
+        <p>Este es tu panel principal.</p>
 
-      <div class="mb-3">
-        <button class="btn btn-outline-primary me-2" (click)="setSection('dashboard')">Ver NL</button>
-        <button class="btn btn-outline-secondary" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
+        <div class="mb-3">
+          <button class="btn btn-outline-primary me-2" (click)="setSection('dashboard')">Ver NL</button>
+          <button class="btn btn-outline-secondary" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden" style="height: 200px;">
+          <div id="map" style="height: 120%; width: 50%;"></div>
+        </div>
+
       </div>
 
-      <div class="map-container mt-4" style="height: 600px;">
-        <iframe
-          width="100%"
-          height="100%"
-          style="border: none; border-radius: 12px;"
-          src="https://api.mapbox.com/styles/v1/nataliagquintanilla/cmbadctro016n01sdbtju3v3n.html?title=view&access_token=pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg&zoomwheel=true&fresh=true#11.15/25.7376/-100.2823"
-          allowfullscreen
-        ></iframe>
+      <div *ngIf="selectedFeatureProps" class="bg-light border-start p-3" style="width: 320px; height: auto; overflow-y: auto;">
+        <h5>Centro #{{ selectedFeatureProps['Centro_ID'] }}</h5>
+        <p><strong>Latitud:</strong> {{ selectedFeatureProps['latitude'] }}</p>
+        <p><strong>Longitud:</strong> {{ selectedFeatureProps['longitude'] }}</p>
+        <button class="btn btn-sm btn-outline-secondary mt-3" (click)="selectedFeatureProps = null">Cerrar</button>
       </div>
     </div>
 
@@ -89,8 +93,8 @@
           height="100%"
           style="border: none; border-radius: 12px;"
           src="https://api.mapbox.com/styles/v1/nataliagquintanilla/cmbadahuh009h01qoe5taeykn.html?title=view&access_token=pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg&zoomwheel=true&fresh=true#5.66/25.373/-100.349"
-          allowfullscreen
-        ></iframe>
+          allowfullscreen>
+        </iframe>
       </div>
     </div>
 

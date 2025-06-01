@@ -45,7 +45,7 @@ body {
 /* Contenedor visible (ajustado a ancho específico) */
 .csv-scroll-container {
   max-height: 500px;
-  max-width: 1000px; /* <-- Aquí controlas el tamaño horizontal */
+  max-width: 1000px;
   overflow-x: auto;
   overflow-y: auto;
   border: 1px solid #ccc;
@@ -56,7 +56,7 @@ body {
 
 /* Contenedor interno para evitar que la tabla se desborde */
 .csv-scroll-inner {
-  width: max-content; /* permite que la tabla fluya horizontalmente si es más grande */
+  width: max-content;
 }
 
 /* Estilo adicional para celdas */
@@ -68,12 +68,22 @@ body {
   text-overflow: ellipsis;
 }
 
-
-
 thead.sticky-top th {
-  background-color: #f8f9fa;  /* color claro del encabezado */
+  background-color: #f8f9fa;
   position: sticky;
   top: 0;
   z-index: 1;
 }
 
+/* Tarjeta decorativa para mapa */
+.card {
+  background-color: #ffffff;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.rounded-4 {
+  border-radius: 1rem;
+}
