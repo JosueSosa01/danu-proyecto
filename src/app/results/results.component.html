@@ -1,3 +1,14 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - E-commerce</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body style="background-color: #f4f6f9;">
+
 <div class="d-flex">
   <!-- Sidebar -->
   <div class="sidebar bg-dark text-white d-flex flex-column p-3" style="width: 220px; height: 100vh;">
@@ -18,26 +29,9 @@
           <i class="bi bi-pie-chart me-2"></i> Analytics
         </button>
         <ul class="dropdown-menu dropdown-menu-dark w-100" aria-labelledby="dropdownAnalytics">
-          <li><a class="dropdown-item text-white" href="#">Gráficas</a></li>
-          <li><a class="dropdown-item text-white" href="#">Modelo</a></li>
           <li><a class="dropdown-item text-white" href="#" (click)="setSection('dashboard')">Mapa NL</a></li>
           <li><a class="dropdown-item text-white" href="#" (click)="setSection('dashboard-nacional')">Mapa Nacional</a></li>
         </ul>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link text-white mb-1 w-100 text-start bg-transparent border-0" (click)="setSection('user')">
-          <i class="bi bi-person me-2"></i> User
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link text-white mb-1 w-100 text-start bg-transparent border-0" (click)="setSection('fileManager')">
-          <i class="bi bi-folder me-2"></i> File Manager
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link text-white mb-1 w-100 text-start bg-transparent border-0" (click)="setSection('settings')">
-          <i class="bi bi-gear me-2"></i> Setting
-        </button>
       </li>
     </ul>
   </div>
@@ -45,82 +39,150 @@
   <!-- Main content -->
   <div class="p-4 flex-grow-1">
 
-    <!-- Dashboard NL -->
-    <div *ngIf="activeSection === 'dashboard'" class="d-flex">
-      <div class="flex-grow-1" style="height: auto; position: relative;">
-        <h1>Centros de distribución de Nuevo León</h1>
-        <p>Este es tu panel principal.</p>
-        <div class="mb-3">
+    <!-- DASHBOARD NUEVO LEÓN -->
+    <div *ngIf="activeSection === 'dashboard'" class="d-flex flex-column gap-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h1 class="fw-bold">Centros de Distribución de Nuevo León</h1>
+          <p class="text-muted">Visualización local en Monterrey y alrededores.</p>
+        </div>
+        <div>
           <button class="btn btn-outline-primary me-2" (click)="setSection('dashboard')">Ver NL</button>
           <button class="btn btn-outline-secondary" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
         </div>
-        <div class="card shadow-sm border-0 rounded-4 overflow-hidden" style="height: 320px;">
-          <div id="map" style="height: 100%; width: 100%;"></div>
+      </div>
+
+      <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white fw-bold">Mapa de Centros - Nuevo León</div>
+        <div class="card-body p-0">
+          <div id="map" style="height: 320px; width: 100%;"></div>
         </div>
       </div>
-      <div *ngIf="selectedFeatureProps" class="bg-light border-start p-3" style="width: 320px; height: 320px; overflow-y: auto;">
-        <h5>Centro #{{ selectedFeatureProps['Centro_ID'] }}</h5>
+
+      <div *ngIf="selectedFeatureProps" class="card mt-3 p-3 shadow-sm border-0 rounded-4">
+        <h5 class="fw-bold">Centro #{{ selectedFeatureProps['Centro_ID'] }}</h5>
         <p><strong>Latitud:</strong> {{ selectedFeatureProps['latitude'] }}</p>
         <p><strong>Longitud:</strong> {{ selectedFeatureProps['longitude'] }}</p>
-        <button class="btn btn-sm btn-outline-secondary mt-3" (click)="selectedFeatureProps = null">Cerrar</button>
+        <button class="btn btn-sm btn-outline-secondary mt-2" (click)="selectedFeatureProps = null">Cerrar</button>
       </div>
     </div>
 
-    <!-- Dashboard Nacional -->
-    <div *ngIf="activeSection === 'dashboard-nacional'" class="d-flex flex-column gap-4">
-      <div class="flex-grow-1" style="height: auto; position: relative; max-width: 100%;">
-        <h1>Centros de distribución Nacional</h1>
-        <p>Visualización a nivel nacional.</p>
-        <div class="mb-3">
+    <!-- DASHBOARD NACIONAL -->
+    <div *ngIf="activeSection === 'dashboard-nacional'" class="container-fluid px-0">
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="fw-bold">Centros de Distribución Nacional</h1>
+          <p class="text-muted">Visualización a nivel nacional.</p>
+        </div>
+        <div>
           <button class="btn btn-outline-secondary me-2" (click)="setSection('dashboard')">Ver NL</button>
           <button class="btn btn-outline-primary" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
         </div>
-        <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4" style="height: 320px;">
-          <div id="mapNacional" style="height: 100%; width: 100%;"></div>
+      </div>
+
+      <!-- FILTROS -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+          <input [(ngModel)]="filters.fechaInicio" (change)="applyFilters()" type="date" id="fechaInicio" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label for="fechaFin" class="form-label">Fecha Fin</label>
+          <input [(ngModel)]="filters.fechaFin" (change)="applyFilters()" type="date" id="fechaFin" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label for="estadoSelect" class="form-label">Estados</label>
+          <select multiple class="form-select" id="estadoSelect" [(ngModel)]="filters.estados" (change)="applyFilters()">
+            <option *ngFor="let estado of estadosDisponibles" [value]="estado">{{ estado }}</option>
+          </select>
         </div>
       </div>
 
-      <!-- Gráficas y tabla desde backend -->
-      <div>
-        <h2 class="mb-4">Análisis Nacional</h2>
-
-        <!-- Gráfica de barras: Top Productos -->
-        <div class="mb-5">
-          <h5>Top 5 Productos</h5>
-          <canvas baseChart
-                  [data]="barChartDataProductos"
-                  [type]="barChartType">
-          </canvas>
+      <!-- KPIs -->
+      <div class="row g-3 mb-4" *ngIf="resumenKpi">
+        <div class="col-md-2 col-sm-6">
+          <div class="card text-center shadow-sm p-3 border-0 rounded-4">
+            <h6 class="text-muted">Total Orders</h6>
+            <h3 class="fw-bold text-primary">{{ resumenKpi.totalOrders }}</h3>
+            <small class="text-success">↑ {{ resumenKpi.orderChange }}%</small>
+          </div>
         </div>
-
-        <!-- Gráfica de barras: Productos por día -->
-        <div class="mb-5">
-          <h5>Productos entregados por día</h5>
-          <canvas baseChart
-                  [data]="barChartDataDia"
-                  [type]="barChartType">
-          </canvas>
+        <div class="col-md-2 col-sm-6">
+          <div class="card text-center shadow-sm p-3 border-0 rounded-4">
+            <h6 class="text-muted">Avg Delivery Time</h6>
+            <h3 class="fw-bold text-danger">{{ resumenKpi.avgDeliveryTime }} días</h3>
+            <small class="text-danger">↓ {{ resumenKpi.avgDeliveryChange }} días</small>
+          </div>
         </div>
-
-        <!-- Gráfica de pastel: Porcentaje por zona -->
-        <div class="mb-5">
-          <h5>Distribución por Zona</h5>
-          <canvas baseChart
-                  [data]="pieChartDataZona"
-                  [type]="pieChartType">
-          </canvas>
+        <div class="col-md-2 col-sm-6">
+          <div class="card text-center shadow-sm p-3 border-0 rounded-4">
+            <h6 class="text-muted">On-Time Delivery</h6>
+            <h3 class="fw-bold text-success">{{ resumenKpi.onTime }}%</h3>
+            <small class="text-success">↑ {{ resumenKpi.onTimeChange }}%</small>
+          </div>
         </div>
+        <div class="col-md-2 col-sm-6">
+          <div class="card text-center shadow-sm p-3 border-0 rounded-4">
+            <h6 class="text-muted">Delayed Deliveries</h6>
+            <h3 class="fw-bold text-warning">{{ resumenKpi.delayed }}%</h3>
+            <small class="text-danger">↓ {{ resumenKpi.delayedChange }}%</small>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-6">
+          <div class="card text-center shadow-sm p-3 border-0 rounded-4">
+            <h6 class="text-muted">Distribution Centers</h6>
+            <h3 class="fw-bold">{{ resumenKpi.centros }}</h3>
+            <small class="text-success">+1 new center</small>
+          </div>
+        </div>
+      </div>
 
-        <!-- Tabla resumen -->
-        <div class="mb-5">
-          <h5>Desempeño por Estado</h5>
-          <table class="table table-bordered table-hover table-sm">
-            <thead class="table-light">
+      <!-- Mapa + Pie -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-6">
+          <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white fw-bold">Red de distribución</div>
+            <div class="card-body p-0">
+              <div id="mapNacional" style="height: 320px; width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card shadow-sm border-0 rounded-4 p-3">
+            <h6 class="fw-bold">Distribución por Zona</h6>
+            <canvas baseChart [data]="pieChartDataZona" [type]="pieChartType"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barras -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-6">
+          <div class="card shadow-sm border-0 rounded-4 p-3">
+            <h6 class="fw-bold">Top 5 Productos Más Solicitados</h6>
+            <canvas baseChart [data]="barChartDataProductos" [type]="barChartType"></canvas>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card shadow-sm border-0 rounded-4 p-3">
+            <h6 class="fw-bold">Productos Entregados por Día</h6>
+            <canvas baseChart [data]="barChartDataDia" [type]="barChartType"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="card shadow-sm border-0 rounded-4 p-3 mt-4">
+        <h6 class="fw-bold">Desempeño por Estado</h6>
+        <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+          <table class="table table-bordered table-hover table-sm align-middle mb-0">
+            <thead class="table-light sticky-top bg-white">
               <tr>
                 <th>Estado</th>
-                <th>Ordenes</th>
+                <th>Órdenes</th>
                 <th>Tiempo promedio</th>
-                <th>Porcentaje a tiempo</th>
+                <th>% A Tiempo</th>
                 <th>Desempeño</th>
               </tr>
             </thead>
@@ -136,7 +198,12 @@
           </table>
         </div>
       </div>
+
     </div>
 
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

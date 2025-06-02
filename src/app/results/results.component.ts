@@ -1,7 +1,7 @@
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { NgChartsModule } from 'ng2-charts';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import mapboxgl from 'mapbox-gl';
@@ -15,14 +15,26 @@ import mapboxgl from 'mapbox-gl';
 })
 export class ResultsComponent implements AfterViewInit, OnInit {
   activeSection: string = 'dashboard';
-  csvHeaders: string[] = [];
-  csvData: string[][] = [];
-  filteredData: string[][] = [];
-  columnFilters: { [key: string]: string } = {};
 
+  // Mapas
   map!: mapboxgl.Map;
   mapNacional!: mapboxgl.Map;
   selectedFeatureProps: any = null;
+
+  // Filtros
+  filters = {
+    fechaInicio: '',
+    fechaFin: '',
+    estados: [] as string[]
+  };
+
+  estadosDisponibles: string[] = [
+    "Aguascalientes", "Baja California", "Baja California Sur", "Campeche", "Chiapas", "Chihuahua",
+    "Ciudad de México", "Coahuila", "Colima", "Durango", "Guanajuato", "Guerrero", "Hidalgo", "Jalisco",
+    "México", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca", "Puebla", "Querétaro",
+    "Quintana Roo", "San Luis Potosí", "Sinaloa", "Sonora", "Tabasco", "Tamaulipas", "Tlaxcala",
+    "Veracruz", "Yucatán", "Zacatecas"
+  ];
 
   // Datos del backend
   topProductos: any[] = [];
@@ -30,8 +42,9 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   porZona: any[] = [];
   resumenTabla: any[] = [];
   resumen: any[] = [];
+  resumenKpi: any = null;
 
-  // Configuración de gráficas
+  // Gráficas
   barChartDataProductos: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
   barChartDataDia: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
   pieChartDataZona: ChartConfiguration<'pie'>['data'] = { labels: [], datasets: [] };
@@ -42,55 +55,93 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<any[]>('https://backend-danu.onrender.com/api/top_productos')
+    this.setSection('dashboard');
+    this.applyFilters(); // Mostrar datos por defecto
+  }
+
+  applyFilters(): void {
+    const params = new HttpParams()
+      .set('fecha_inicio', this.filters.fechaInicio || '')
+      .set('fecha_fin', this.filters.fechaFin || '')
+      .set('estados', this.filters.estados.join(','));
+
+    // TOP PRODUCTOS
+    this.http.get<any[]>('https://backend-danu.onrender.com/api/top_productos', { params })
       .subscribe(data => {
         this.topProductos = data;
         this.barChartDataProductos = {
-          labels: this.topProductos.map(p => p.producto),
-          datasets: [
-            {
-              data: this.topProductos.map(p => p.cantidad),
-              label: 'Cantidad',
-              backgroundColor: 'rgba(54, 162, 235, 0.6)'
-            }
-          ]
+          labels: data.map(p => p.producto),
+          datasets: [{
+            data: data.map(p => p.cantidad),
+            label: 'Cantidad',
+            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+          }]
         };
       });
 
-    this.http.get<any[]>('https://backend-danu.onrender.com/api/por_dia')
+    // PRODUCTOS POR DÍA
+    this.http.get<any[]>('https://backend-danu.onrender.com/api/por_dia', { params })
       .subscribe(data => {
         this.productosPorDia = data;
         this.barChartDataDia = {
-          labels: this.productosPorDia.map(p => p.fecha),
-          datasets: [
-            {
-              data: this.productosPorDia.map(p => p.total),
-              label: 'Total',
-              backgroundColor: 'rgba(75, 192, 192, 0.6)'
-            }
-          ]
+          labels: data.map(p => p.dia),
+          datasets: [{
+            data: data.map(p => p.productos_entregados),
+            label: 'Total',
+            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+          }]
         };
       });
 
-    this.http.get<any[]>('https://backend-danu.onrender.com/api/por_zona')
+    // PIE CHART
+    this.http.get<any[]>('https://backend-danu.onrender.com/api/por_zona', { params })
       .subscribe(data => {
         this.porZona = data;
         this.pieChartDataZona = {
-          labels: this.porZona.map(p => p.zona),
-          datasets: [
-            {
-              data: this.porZona.map(p => p.porcentaje),
-              backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#66BB6A', '#BA68C8']
-            }
-          ]
+          labels: data.map(p => p.zona),
+          datasets: [{
+            data: data.map(p => p.porcentaje),
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#66BB6A', '#BA68C8']
+          }]
         };
       });
 
-    this.http.get<any[]>('https://backend-danu.onrender.com/api/resumen_tabla')
+    // TABLA
+    this.http.get<any[]>('https://backend-danu.onrender.com/api/resumen_tabla', { params })
       .subscribe(data => this.resumenTabla = data);
 
-    this.http.get<any[]>('https://backend-danu.onrender.com/api/resumen')
-      .subscribe(data => this.resumen = data);
+    // KPIs
+    this.http.get<any[]>('https://backend-danu.onrender.com/api/resumen', { params })
+      .subscribe(data => {
+        this.resumen = data;
+        this.setResumenKPI(data);
+      });
+  }
+
+  setResumenKPI(data: any[]): void {
+    if (!data || data.length === 0) return;
+    const kpis = data[0];
+    this.resumenKpi = {
+      totalOrders: kpis.total_orders ?? 0,
+      orderChange: kpis.order_change ?? 0,
+      avgDeliveryTime: kpis.avg_delivery_time ?? 0,
+      avgDeliveryChange: kpis.avg_delivery_change ?? 0,
+      onTime: kpis.on_time_percentage ?? 0,
+      onTimeChange: kpis.on_time_change ?? 0,
+      delayed: kpis.delayed_percentage ?? 0,
+      delayedChange: kpis.delayed_change ?? 0,
+      centros: kpis.total_centros ?? 0
+    };
+  }
+
+  setSection(section: string): void {
+    this.activeSection = section;
+
+    if (section === 'dashboard') {
+      setTimeout(() => this.initializeMap(), 0);
+    } else if (section === 'dashboard-nacional') {
+      setTimeout(() => this.initializeMapNacional(), 0);
+    }
   }
 
   ngAfterViewInit(): void {
@@ -101,23 +152,8 @@ export class ResultsComponent implements AfterViewInit, OnInit {
     }
   }
 
-  setSection(section: string): void {
-    this.activeSection = section;
-
-    if (section === 'fileManager' && this.csvData.length === 0) {
-      this.loadCsvFromAssets();
-    }
-
-    if (section === 'dashboard') {
-      setTimeout(() => this.initializeMap(), 0);
-    } else if (section === 'dashboard-nacional') {
-      setTimeout(() => this.initializeMapNacional(), 0);
-    }
-  }
-
   initializeMap(): void {
     mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
-
     this.map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/nataliagquintanilla/cmbadctro016n01sdbtju3v3n',
@@ -146,7 +182,6 @@ export class ResultsComponent implements AfterViewInit, OnInit {
 
   initializeMapNacional(): void {
     mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
-
     this.mapNacional = new mapboxgl.Map({
       container: 'mapNacional',
       style: 'mapbox://styles/nataliagquintanilla/cmbaaszy401aw01qy84dyhja7',
@@ -171,43 +206,5 @@ export class ResultsComponent implements AfterViewInit, OnInit {
         this.mapNacional.getCanvas().style.cursor = '';
       });
     });
-  }
-
-  loadCsvFromAssets(): void {
-    this.http.get('assets/data/database_NL.csv', { responseType: 'text' }).subscribe({
-      next: (data: string) => {
-        const lines = data.split('\n').filter(line => line.trim() !== '');
-        this.csvHeaders = lines[0].split(',').map(h => h.trim());
-        this.csvData = lines.slice(1).map(line => line.split(',').map(cell => cell.trim()));
-        this.filteredData = [...this.csvData];
-        this.csvHeaders.forEach(header => {
-          this.columnFilters[header] = '';
-        });
-      },
-      error: error => {
-        console.error('Error al cargar el archivo CSV:', error);
-      }
-    });
-  }
-
-  applyFilters(): void {
-    this.filteredData = this.csvData.filter(row =>
-      this.csvHeaders.every((header, i) => {
-        const filter = this.columnFilters[header];
-        return !filter || row[i] === filter;
-      })
-    );
-  }
-
-  getUniqueValuesForColumn(index: number): string[] {
-    const unique = new Set<string>();
-    for (let row of this.csvData) {
-      unique.add(row[index]);
-    }
-    return Array.from(unique).sort();
-  }
-
-  trackByIndex(index: number): number {
-    return index;
   }
 }
