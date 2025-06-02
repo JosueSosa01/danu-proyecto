@@ -13,7 +13,8 @@
         </button>
       </li>
       <li class="nav-item dropdown">
-        <button class="nav-link dropdown-toggle w-100 text-start bg-transparent border-0 text-white mb-1" type="button" id="dropdownAnalytics" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="nav-link dropdown-toggle w-100 text-start bg-transparent border-0 text-white mb-1"
+                type="button" id="dropdownAnalytics" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-pie-chart me-2"></i> Analytics
         </button>
         <ul class="dropdown-menu dropdown-menu-dark w-100" aria-labelledby="dropdownAnalytics">
@@ -43,6 +44,7 @@
 
   <!-- Main content -->
   <div class="p-4 flex-grow-1">
+
     <!-- Dashboard NL -->
     <div *ngIf="activeSection === 'dashboard'" class="d-flex">
       <div class="flex-grow-1" style="height: auto; position: relative;">
@@ -65,67 +67,76 @@
     </div>
 
     <!-- Dashboard Nacional -->
-    <div *ngIf="activeSection === 'dashboard-nacional'" class="d-flex">
-      <div class="flex-grow-1" style="height: auto; position: relative; max-width: 50%;">
+    <div *ngIf="activeSection === 'dashboard-nacional'" class="d-flex flex-column gap-4">
+      <div class="flex-grow-1" style="height: auto; position: relative; max-width: 100%;">
         <h1>Centros de distribución Nacional</h1>
         <p>Visualización a nivel nacional.</p>
         <div class="mb-3">
           <button class="btn btn-outline-secondary me-2" (click)="setSection('dashboard')">Ver NL</button>
           <button class="btn btn-outline-primary" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
         </div>
-        <div class="card shadow-sm border-0 rounded-4 overflow-hidden" style="height: 320px;">
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4" style="height: 320px;">
           <div id="mapNacional" style="height: 100%; width: 100%;"></div>
         </div>
       </div>
-      <div *ngIf="selectedFeatureProps" class="bg-light border-start p-3" style="width: 320px; height: 320px; overflow-y: auto;">
-        <h5>Centro #{{ selectedFeatureProps['Centro_ID'] }}</h5>
-        <p><strong>Latitud:</strong> {{ selectedFeatureProps['latitude'] }}</p>
-        <p><strong>Longitud:</strong> {{ selectedFeatureProps['longitude'] }}</p>
-        <button class="btn btn-sm btn-outline-secondary mt-3" (click)="selectedFeatureProps = null">Cerrar</button>
-      </div>
-    </div>
 
-    <!-- File Manager -->
-    <div *ngIf="activeSection === 'fileManager'">
-      <h2>Gestión de archivos</h2>
-      <p>Contenido del archivo precargado:</p>
-      <div *ngIf="filteredData.length > 0">
-        <h5>Contenido del archivo:</h5>
-        <div class="csv-scroll-container">
-          <div class="csv-scroll-inner">
-            <table class="table table-bordered table-sm table-striped table-hover">
-              <thead class="table-light sticky-top">
-                <tr>
-                  <th *ngFor="let header of csvHeaders; let i = index; trackBy: trackByIndex" class="text-nowrap">
-                    {{ header }}
-                    <select class="form-select form-select-sm mt-1" [(ngModel)]="columnFilters[header]" (change)="applyFilters()">
-                      <option value="">(Todos)</option>
-                      <option *ngFor="let value of getUniqueValuesForColumn(i)" [value]="value">{{ value }}</option>
-                    </select>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let row of filteredData; trackBy: trackByIndex">
-                  <td *ngFor="let cell of row; trackBy: trackByIndex" class="text-nowrap">{{ cell }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      <!-- Gráficas y tabla desde backend -->
+      <div>
+        <h2 class="mb-4">Análisis Nacional</h2>
+
+        <!-- Gráfica de barras: Top Productos -->
+        <div class="mb-5">
+          <h5>Top 5 Productos</h5>
+          <canvas baseChart
+                  [data]="barChartDataProductos"
+                  [type]="barChartType">
+          </canvas>
+        </div>
+
+        <!-- Gráfica de barras: Productos por día -->
+        <div class="mb-5">
+          <h5>Productos entregados por día</h5>
+          <canvas baseChart
+                  [data]="barChartDataDia"
+                  [type]="barChartType">
+          </canvas>
+        </div>
+
+        <!-- Gráfica de pastel: Porcentaje por zona -->
+        <div class="mb-5">
+          <h5>Distribución por Zona</h5>
+          <canvas baseChart
+                  [data]="pieChartDataZona"
+                  [type]="pieChartType">
+          </canvas>
+        </div>
+
+        <!-- Tabla resumen -->
+        <div class="mb-5">
+          <h5>Desempeño por Estado</h5>
+          <table class="table table-bordered table-hover table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>Estado</th>
+                <th>Ordenes</th>
+                <th>Tiempo promedio</th>
+                <th>Porcentaje a tiempo</th>
+                <th>Desempeño</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fila of resumenTabla">
+                <td>{{ fila.estado_del_cliente }}</td>
+                <td>{{ fila.Ordenes }}</td>
+                <td>{{ fila['Tiempo promedio'] }}</td>
+                <td>{{ fila['Porcentaje a tiempo'] }}</td>
+                <td>{{ fila['EstadoDesempeño'] }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <!-- User -->
-    <div *ngIf="activeSection === 'user'">
-      <h1>Perfil de usuario</h1>
-      <p>Sección de información del usuario.</p>
-    </div>
-
-    <!-- Settings -->
-    <div *ngIf="activeSection === 'settings'">
-      <h1>Configuración</h1>
-      <p>Preferencias del sistema.</p>
-    </div>
   </div>
 </div>

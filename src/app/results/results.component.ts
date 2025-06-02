@@ -1,17 +1,19 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { NgChartsModule } from 'ng2-charts';
+import { ChartConfiguration, ChartType } from 'chart.js';
 import mapboxgl from 'mapbox-gl';
 
 @Component({
   selector: 'app-results',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIf, NgFor],
+  imports: [CommonModule, FormsModule, NgIf, NgFor, NgChartsModule],
   templateUrl: './results.component.html',
   styleUrls: ['./results.component.css']
 })
-export class ResultsComponent implements AfterViewInit {
+export class ResultsComponent implements AfterViewInit, OnInit {
   activeSection: string = 'dashboard';
   csvHeaders: string[] = [];
   csvData: string[][] = [];
@@ -22,7 +24,74 @@ export class ResultsComponent implements AfterViewInit {
   mapNacional!: mapboxgl.Map;
   selectedFeatureProps: any = null;
 
+  // Datos del backend
+  topProductos: any[] = [];
+  productosPorDia: any[] = [];
+  porZona: any[] = [];
+  resumenTabla: any[] = [];
+  resumen: any[] = [];
+
+  // Configuración de gráficas
+  barChartDataProductos: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
+  barChartDataDia: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
+  pieChartDataZona: ChartConfiguration<'pie'>['data'] = { labels: [], datasets: [] };
+
+  barChartType: ChartType = 'bar';
+  pieChartType: ChartType = 'pie';
+
   constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.http.get<any[]>('https://backend-danu.onrender.com/api/top_productos')
+      .subscribe(data => {
+        this.topProductos = data;
+        this.barChartDataProductos = {
+          labels: this.topProductos.map(p => p.producto),
+          datasets: [
+            {
+              data: this.topProductos.map(p => p.cantidad),
+              label: 'Cantidad',
+              backgroundColor: 'rgba(54, 162, 235, 0.6)'
+            }
+          ]
+        };
+      });
+
+    this.http.get<any[]>('https://backend-danu.onrender.com/api/por_dia')
+      .subscribe(data => {
+        this.productosPorDia = data;
+        this.barChartDataDia = {
+          labels: this.productosPorDia.map(p => p.fecha),
+          datasets: [
+            {
+              data: this.productosPorDia.map(p => p.total),
+              label: 'Total',
+              backgroundColor: 'rgba(75, 192, 192, 0.6)'
+            }
+          ]
+        };
+      });
+
+    this.http.get<any[]>('https://backend-danu.onrender.com/api/por_zona')
+      .subscribe(data => {
+        this.porZona = data;
+        this.pieChartDataZona = {
+          labels: this.porZona.map(p => p.zona),
+          datasets: [
+            {
+              data: this.porZona.map(p => p.porcentaje),
+              backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#66BB6A', '#BA68C8']
+            }
+          ]
+        };
+      });
+
+    this.http.get<any[]>('https://backend-danu.onrender.com/api/resumen_tabla')
+      .subscribe(data => this.resumenTabla = data);
+
+    this.http.get<any[]>('https://backend-danu.onrender.com/api/resumen')
+      .subscribe(data => this.resumen = data);
+  }
 
   ngAfterViewInit(): void {
     if (this.activeSection === 'dashboard') {
