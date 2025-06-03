@@ -20,6 +20,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   map!: mapboxgl.Map;
   mapNacional!: mapboxgl.Map;
   selectedFeatureProps: any = null;
+  mapStyle: 'antes' | 'despues' = 'despues'; // Estado del mapa
 
   // Filtros
   filters = {
@@ -182,9 +183,16 @@ export class ResultsComponent implements AfterViewInit, OnInit {
 
   initializeMapNacional(): void {
     mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
+
+    // ⚠️ CORREGIDO: los estilos estaban invertidos
+    const styleAntes = 'mapbox://styles/nataliagquintanilla/cmbaaszy401aw01qy84dyhja7'; // Era el de después
+    const styleDespues = 'mapbox://styles/nataliagquintanilla/cmbadahuh009h01qoe5taeykn'; // Era el de antes
+
+    const styleToUse = this.mapStyle === 'antes' ? styleAntes : styleDespues;
+
     this.mapNacional = new mapboxgl.Map({
       container: 'mapNacional',
-      style: 'mapbox://styles/nataliagquintanilla/cmbaaszy401aw01qy84dyhja7',
+      style: styleToUse,
       center: [-102.5528, 23.6345],
       zoom: 4.5
     });
@@ -206,5 +214,13 @@ export class ResultsComponent implements AfterViewInit, OnInit {
         this.mapNacional.getCanvas().style.cursor = '';
       });
     });
+  }
+
+  cambiarEstiloMapa(estilo: 'antes' | 'despues'): void {
+    this.mapStyle = estilo;
+    if (this.mapNacional) {
+      this.mapNacional.remove();
+    }
+    setTimeout(() => this.initializeMapNacional(), 0);
   }
 }

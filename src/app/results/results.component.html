@@ -139,10 +139,26 @@
       </div>
 
       <!-- Mapa + Pie -->
+      <!-- Mapa + Pie -->
       <div class="row g-4 mb-4">
         <div class="col-md-6">
           <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-header bg-white fw-bold">Red de distribución</div>
+            <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+              <span>Red de distribución</span>
+              <!-- 🔄 Botones para cambiar de mapa -->
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary"
+                        [class.active]="mapStyle === 'antes'"
+                        (click)="cambiarEstiloMapa('antes')">
+                  Antes
+                </button>
+                <button class="btn btn-sm btn-outline-secondary"
+                        [class.active]="mapStyle === 'despues'"
+                        (click)="cambiarEstiloMapa('despues')">
+                  Después
+                </button>
+              </div>
+            </div>
             <div class="card-body p-0">
               <div id="mapNacional" style="height: 320px; width: 100%;"></div>
             </div>
@@ -155,6 +171,7 @@
           </div>
         </div>
       </div>
+
 
       <!-- Barras -->
       <div class="row g-4 mb-4">
