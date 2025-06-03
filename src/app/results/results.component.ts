@@ -20,7 +20,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   map!: mapboxgl.Map;
   mapNacional!: mapboxgl.Map;
   selectedFeatureProps: any = null;
-  mapStyle: 'antes' | 'despues' = 'despues'; // Estado del mapa
+  mapStyle: 'antes' | 'despues' = 'despues';
 
   // Filtros
   filters = {
@@ -44,6 +44,31 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   resumenTabla: any[] = [];
   resumen: any[] = [];
   resumenKpi: any = null;
+
+  // KPIs dummy por estilo
+  kpisAntes = {
+    totalOrders: 1248,
+    orderChange: 12.5,
+    avgDeliveryTime: 2.4,
+    avgDeliveryChange: 0.3,
+    onTime: 94.2,
+    onTimeChange: 2.1,
+    delayed: 5.8,
+    delayedChange: 2.1,
+    centros: 7
+  };
+
+  kpisDespues = {
+    totalOrders: 1248,
+    orderChange: 15.3,
+    avgDeliveryTime: 1.9,
+    avgDeliveryChange: -0.5,
+    onTime: 97.5,
+    onTimeChange: 3.3,
+    delayed: 2.5,
+    delayedChange: -3.0,
+    centros: 7
+  };
 
   // Gráficas
   barChartDataProductos: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
@@ -111,14 +136,15 @@ export class ResultsComponent implements AfterViewInit, OnInit {
     this.http.get<any[]>('https://backend-danu.onrender.com/api/resumen_tabla', { params })
       .subscribe(data => this.resumenTabla = data);
 
-    // KPIs
-    this.http.get<any[]>('https://backend-danu.onrender.com/api/resumen', { params })
-      .subscribe(data => {
-        this.resumen = data;
-        this.setResumenKPI(data);
-      });
+    // ❌ KPIs del backend eliminados temporalmente
+    // this.http.get<any[]>('https://backend-danu.onrender.com/api/resumen', { params })
+    //   .subscribe(data => {
+    //     this.resumen = data;
+    //     this.setResumenKPI(data);
+    //   });
   }
 
+  // Esta función queda sin uso por ahora
   setResumenKPI(data: any[]): void {
     if (!data || data.length === 0) return;
     const kpis = data[0];
@@ -141,6 +167,8 @@ export class ResultsComponent implements AfterViewInit, OnInit {
     if (section === 'dashboard') {
       setTimeout(() => this.initializeMap(), 0);
     } else if (section === 'dashboard-nacional') {
+      // ✅ KPIs dummy para nacional según estilo actual
+      this.resumenKpi = this.mapStyle === 'antes' ? this.kpisAntes : this.kpisDespues;
       setTimeout(() => this.initializeMapNacional(), 0);
     }
   }
@@ -184,17 +212,16 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   initializeMapNacional(): void {
     mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
 
-    // ⚠️ CORREGIDO: los estilos estaban invertidos
-    const styleAntes = 'mapbox://styles/nataliagquintanilla/cmbaaszy401aw01qy84dyhja7'; // Era el de después
-    const styleDespues = 'mapbox://styles/nataliagquintanilla/cmbadahuh009h01qoe5taeykn'; // Era el de antes
-
+    const styleAntes = 'mapbox://styles/nataliagquintanilla/cmbaaszy401aw01qy84dyhja7';
+    const styleDespues = 'mapbox://styles/nataliagquintanilla/cmbadahuh009h01qoe5taeykn';
     const styleToUse = this.mapStyle === 'antes' ? styleAntes : styleDespues;
 
     this.mapNacional = new mapboxgl.Map({
       container: 'mapNacional',
       style: styleToUse,
       center: [-102.5528, 23.6345],
-      zoom: 4.5
+      zoom: 4.5,
+      attributionControl: false
     });
 
     this.mapNacional.on('load', () => {
@@ -218,6 +245,10 @@ export class ResultsComponent implements AfterViewInit, OnInit {
 
   cambiarEstiloMapa(estilo: 'antes' | 'despues'): void {
     this.mapStyle = estilo;
+
+    // ✅ Cambiar KPIs según el estilo
+    this.resumenKpi = estilo === 'antes' ? this.kpisAntes : this.kpisDespues;
+
     if (this.mapNacional) {
       this.mapNacional.remove();
     }
