@@ -11,30 +11,53 @@
 
 <div class="d-flex">
   <!-- Sidebar -->
-  <div class="sidebar bg-dark text-white d-flex flex-column p-3" style="width: 220px; height: 100vh;">
-    <h4 class="mb-4">Dashboard</h4>
-    <div class="mb-3">
-      <input type="text" class="form-control bg-secondary text-white border-0" placeholder="Search...">
-    </div>
-    <small class="text-muted text-uppercase">Navigation</small>
-    <ul class="nav flex-column mt-2">
-      <li class="nav-item">
-        <button (click)="setSection('dashboard')" class="nav-link text-white bg-primary rounded mb-1 w-100 text-start">
-          <i class="bi bi-house me-2"></i> Dashboard
-        </button>
-      </li>
-      <li class="nav-item dropdown">
-        <button class="nav-link dropdown-toggle w-100 text-start bg-transparent border-0 text-white mb-1"
-                type="button" id="dropdownAnalytics" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-pie-chart me-2"></i> Analytics
-        </button>
-        <ul class="dropdown-menu dropdown-menu-dark w-100" aria-labelledby="dropdownAnalytics">
-          <li><a class="dropdown-item text-white" href="#" (click)="setSection('dashboard')">Mapa NL</a></li>
-          <li><a class="dropdown-item text-white" href="#" (click)="setSection('dashboard-nacional')">Mapa Nacional</a></li>
-        </ul>
-      </li>
-    </ul>
+<div class="sidebar bg-dark text-white d-flex flex-column p-3" style="width: 220px; height: 100vh;">
+  <h4 class="mb-4">Dashboard</h4>
+  <div class="mb-3">
+    <input type="text" class="form-control bg-secondary text-white border-0" placeholder="Search...">
   </div>
+  <small class="text-muted text-uppercase">Navigation</small>
+  <ul class="nav flex-column mt-2">
+    <li class="nav-item">
+      <button (click)="setSection('dashboard')" 
+              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+              [ngClass]="{'active-btn': activeSection === 'dashboard'}">
+        <i class="bi bi-speedometer2 me-2"></i> Dashboards
+      </button>
+
+      <button (click)="setSection('bases')" 
+              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+              [ngClass]="{'active-btn': activeSection === 'bases'}">
+        <i class="bi bi-archive me-2"></i> Bases de Datos
+      </button>
+
+      <button (click)="setSection('rutas')" 
+              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+              [ngClass]="{'active-btn': activeSection === 'rutas'}">
+        <i class="bi bi-signpost-split me-2"></i> Rutas
+      </button>
+
+      <button (click)="setSection('plan')" 
+              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+              [ngClass]="{'active-btn': activeSection === 'plan'}">
+        <i class="bi bi-currency-dollar me-2"></i> Plan Financiero
+      </button>
+
+      <button (click)="setSection('estrategia')" 
+              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+              [ngClass]="{'active-btn': activeSection === 'estrategia'}">
+        <i class="bi bi-diagram-3 me-2"></i> Estrategia
+      </button>
+
+      <button (click)="setSection('conclusiones')" 
+              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+              [ngClass]="{'active-btn': activeSection === 'conclusiones'}">
+        <i class="bi bi-journal-check me-2"></i> Conclusiones
+      </button>
+    </li>
+  </ul>
+</div>
+
 
   <!-- Main content -->
   <div class="p-4 flex-grow-1">
