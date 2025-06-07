@@ -6,27 +6,40 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BackendService {
-  private apiUrl = 'https://backend-danu.onrender.com/api';
+  private apiUrl = 'https://backend-danu.onrender.com';
 
   constructor(private http: HttpClient) {}
 
-  getTopProductos(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/top_productos`);
+  // === KPIs generales ===
+  getKpis(semestre?: string, tipo_centro?: string): Observable<any> {
+    let params = '';
+    if (semestre) params += `semestre=${encodeURIComponent(semestre)}`;
+    if (tipo_centro) params += (params ? '&' : '') + `tipo_centro=${encodeURIComponent(tipo_centro)}`;
+    return this.http.get(`${this.apiUrl}/kpis${params ? '?' + params : ''}`);
   }
 
-  getPorDia(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/por_dia`);
+  // === Emisiones CO₂ por mes ===
+  getEmisionesCo2(semestre?: string, tipo_centro?: string): Observable<any> {
+    let params = '';
+    if (semestre) params += `semestre=${encodeURIComponent(semestre)}`;
+    if (tipo_centro) params += (params ? '&' : '') + `tipo_centro=${encodeURIComponent(tipo_centro)}`;
+    return this.http.get(`${this.apiUrl}/charts/co2${params ? '?' + params : ''}`);
   }
 
-  getPorZona(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/por_zona`);
+  // === Gasto gasolina por mes ===
+  getGastoGasolina(semestre?: string, tipo_centro?: string): Observable<any> {
+    let params = '';
+    if (semestre) params += `semestre=${encodeURIComponent(semestre)}`;
+    if (tipo_centro) params += (params ? '&' : '') + `tipo_centro=${encodeURIComponent(tipo_centro)}`;
+    return this.http.get(`${this.apiUrl}/charts/gasolina${params ? '?' + params : ''}`);
   }
 
-  getResumenTabla(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/resumen_tabla`);
-  }
-
-  getResumen(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/resumen`);
+  // === Histograma de distancias ===
+  getDistancias(semestre?: string, tipo_centro?: string): Observable<any> {
+    let params = '';
+    if (semestre) params += `semestre=${encodeURIComponent(semestre)}`;
+    if (tipo_centro) params += (params ? '&' : '') + `tipo_centro=${encodeURIComponent(tipo_centro)}`;
+    return this.http.get(`${this.apiUrl}/charts/distancia${params ? '?' + params : ''}`);
   }
 }
+

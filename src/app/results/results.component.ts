@@ -1,7 +1,7 @@
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { NgChartsModule } from 'ng2-charts';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import mapboxgl from 'mapbox-gl';
@@ -23,151 +23,120 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   mapStyle: 'antes' | 'despues' = 'despues';
 
   // Filtros
-  filters = {
-    fechaInicio: '',
-    fechaFin: '',
-    estados: [] as string[]
-  };
+  semestre: string = 'Semestre 1';
+  tipoCentro: string = 'Nuevos';
 
-  estadosDisponibles: string[] = [
-    "Aguascalientes", "Baja California", "Baja California Sur", "Campeche", "Chiapas", "Chihuahua",
-    "Ciudad de México", "Coahuila", "Colima", "Durango", "Guanajuato", "Guerrero", "Hidalgo", "Jalisco",
-    "México", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca", "Puebla", "Querétaro",
-    "Quintana Roo", "San Luis Potosí", "Sinaloa", "Sonora", "Tabasco", "Tamaulipas", "Tlaxcala",
-    "Veracruz", "Yucatán", "Zacatecas"
-  ];
-
-  // Datos del backend
-  topProductos: any[] = [];
-  productosPorDia: any[] = [];
-  porZona: any[] = [];
-  resumenTabla: any[] = [];
-  resumen: any[] = [];
   resumenKpi: any = null;
 
-  // KPIs dummy por estilo
-  kpisAntes = {
-    totalOrders: 1248,
-    orderChange: 12.5,
-    avgDeliveryTime: 2.4,
-    avgDeliveryChange: 0.3,
-    onTime: 94.2,
-    onTimeChange: 2.1,
-    delayed: 5.8,
-    delayedChange: 2.1,
-    centros: 7
-  };
-
-  kpisDespues = {
-    totalOrders: 1248,
-    orderChange: 15.3,
-    avgDeliveryTime: 1.9,
-    avgDeliveryChange: -0.5,
-    onTime: 97.5,
-    onTimeChange: 3.3,
-    delayed: 2.5,
-    delayedChange: -3.0,
-    centros: 7
-  };
+  // KPI dummy para nacional
+  kpisAntes = { totalOrders: 1248, orderChange: 12.5, avgDeliveryTime: 2.4, avgDeliveryChange: 0.3, onTime: 94.2, onTimeChange: 2.1, delayed: 5.8, delayedChange: 2.1, centros: 7 };
+  kpisDespues = { totalOrders: 1248, orderChange: 15.3, avgDeliveryTime: 1.9, avgDeliveryChange: -0.5, onTime: 97.5, onTimeChange: 3.3, delayed: 2.5, delayedChange: -3.0, centros: 7 };
 
   // Gráficas
-  barChartDataProductos: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
-  barChartDataDia: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
-  pieChartDataZona: ChartConfiguration<'pie'>['data'] = { labels: [], datasets: [] };
+  lineChartLabelsGasolina: string[] = [];
+  lineChartDataGasolina: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
 
-  barChartType: ChartType = 'bar';
-  pieChartType: ChartType = 'pie';
+  areaChartLabelsDistancia: string[] = [];
+  areaChartDataDistancia: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
+
+  barChartLabelsCo2: string[] = [];
+  barChartDataCo2: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.setSection('dashboard');
-    this.applyFilters(); // Mostrar datos por defecto
+    this.cargarDatos();
   }
 
-  applyFilters(): void {
-    const params = new HttpParams()
-      .set('fecha_inicio', this.filters.fechaInicio || '')
-      .set('fecha_fin', this.filters.fechaFin || '')
-      .set('estados', this.filters.estados.join(','));
+  cargarDatos(): void {
+    const baseUrl = 'https://backend-danu.onrender.com';
 
-    // TOP PRODUCTOS
-    this.http.get<any[]>('https://backend-danu.onrender.com/api/top_productos', { params })
-      .subscribe(data => {
-        this.topProductos = data;
-        this.barChartDataProductos = {
-          labels: data.map(p => p.producto),
-          datasets: [{
-            data: data.map(p => p.cantidad),
-            label: 'Cantidad',
-            backgroundColor: 'rgba(54, 162, 235, 0.6)'
-          }]
-        };
-      });
-
-    // PRODUCTOS POR DÍA
-    this.http.get<any[]>('https://backend-danu.onrender.com/api/por_dia', { params })
-      .subscribe(data => {
-        this.productosPorDia = data;
-        this.barChartDataDia = {
-          labels: data.map(p => p.dia),
-          datasets: [{
-            data: data.map(p => p.productos_entregados),
-            label: 'Total',
-            backgroundColor: 'rgba(75, 192, 192, 0.6)'
-          }]
-        };
-      });
-
-    // PIE CHART
-    this.http.get<any[]>('https://backend-danu.onrender.com/api/por_zona', { params })
-      .subscribe(data => {
-        this.porZona = data;
-        this.pieChartDataZona = {
-          labels: data.map(p => p.zona),
-          datasets: [{
-            data: data.map(p => p.porcentaje),
-            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#66BB6A', '#BA68C8']
-          }]
-        };
-      });
-
-    // TABLA
-    this.http.get<any[]>('https://backend-danu.onrender.com/api/resumen_tabla', { params })
-      .subscribe(data => this.resumenTabla = data);
-
-    // ❌ KPIs del backend eliminados temporalmente
-    // this.http.get<any[]>('https://backend-danu.onrender.com/api/resumen', { params })
-    //   .subscribe(data => {
-    //     this.resumen = data;
-    //     this.setResumenKPI(data);
-    //   });
-  }
-
-  // Esta función queda sin uso por ahora
-  setResumenKPI(data: any[]): void {
-    if (!data || data.length === 0) return;
-    const kpis = data[0];
-    this.resumenKpi = {
-      totalOrders: kpis.total_orders ?? 0,
-      orderChange: kpis.order_change ?? 0,
-      avgDeliveryTime: kpis.avg_delivery_time ?? 0,
-      avgDeliveryChange: kpis.avg_delivery_change ?? 0,
-      onTime: kpis.on_time_percentage ?? 0,
-      onTimeChange: kpis.on_time_change ?? 0,
-      delayed: kpis.delayed_percentage ?? 0,
-      delayedChange: kpis.delayed_change ?? 0,
-      centros: kpis.total_centros ?? 0
+    const params = {
+      semestre: this.semestre,
+      tipo_centro: this.tipoCentro
     };
+
+    // KPIs
+    this.http.get<any>(`${baseUrl}/kpis`, { params }).subscribe(data => {
+      this.resumenKpi = {
+        km: data['Kilómetros recorridos'],
+        co2: data['Emisiones de CO₂'],
+        gasto: data['Gasto estimado en gasolina'],
+        promedio: data['Costo promedio por ruta'],
+        totalRutas: data['Total de rutas']
+      };
+    });
+
+    // Gasto gasolina por centro - línea agrupada
+    this.http.get<any[]>(`${baseUrl}/charts/gasolina`, { params }).subscribe(data => {
+      const grouped: any = {};
+      const meses: Set<string> = new Set();
+
+      data.forEach(d => {
+        const centro = d.tipo_centro;
+        if (!grouped[centro]) grouped[centro] = {};
+        grouped[centro][d.mes] = d.gasto_gasolina;
+        meses.add(d.mes);
+      });
+
+      const labels = Array.from(meses).sort();
+      const datasets = Object.entries(grouped).map(([centro, values]: any) => ({
+        label: centro,
+        data: labels.map(mes => values[mes] || 0),
+        fill: false,
+        borderColor: centro === 'Nuevos' ? '#36A2EB' : '#4BC0C0'
+      }));
+
+      this.lineChartLabelsGasolina = labels;
+      this.lineChartDataGasolina = { labels, datasets };
+    });
+
+    // Distribución de distancia - área
+    this.http.get<any[]>(`${baseUrl}/charts/distancia`, { params }).subscribe(data => {
+      const labels = data.map(d => d.rango_km);
+      const dataset = {
+        label: 'Frecuencia',
+        data: data.map(d => d.frecuencia),
+        fill: true,
+        backgroundColor: 'rgba(75,192,192,0.4)',
+        borderColor: '#4bc0c0',
+        tension: 0.3
+      };
+
+      this.areaChartLabelsDistancia = labels;
+      this.areaChartDataDistancia = { labels, datasets: [dataset] };
+    });
+
+    // CO2 por mes - barras agrupadas
+    this.http.get<any[]>(`${baseUrl}/charts/co2`, { params }).subscribe(data => {
+      const grouped: any = {};
+      const meses: Set<string> = new Set();
+
+      data.forEach(d => {
+        const centro = d.tipo_centro;
+        if (!grouped[centro]) grouped[centro] = {};
+        grouped[centro][d.mes] = d.co2_emitido;
+        meses.add(d.mes);
+      });
+
+      const labels = Array.from(meses).sort();
+      const datasets = Object.entries(grouped).map(([centro, values]: any) => ({
+        label: centro,
+        data: labels.map(mes => values[mes] || 0),
+        backgroundColor: centro === 'Nuevos' ? '#36A2EB' : '#4BC0C0'
+      }));
+
+      this.barChartLabelsCo2 = labels;
+      this.barChartDataCo2 = { labels, datasets };
+    });
   }
 
   setSection(section: string): void {
     this.activeSection = section;
-
     if (section === 'dashboard') {
       setTimeout(() => this.initializeMap(), 0);
     } else if (section === 'dashboard-nacional') {
-      // ✅ KPIs dummy para nacional según estilo actual
       this.resumenKpi = this.mapStyle === 'antes' ? this.kpisAntes : this.kpisDespues;
       setTimeout(() => this.initializeMapNacional(), 0);
     }
@@ -211,7 +180,6 @@ export class ResultsComponent implements AfterViewInit, OnInit {
 
   initializeMapNacional(): void {
     mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
-
     const styleAntes = 'mapbox://styles/nataliagquintanilla/cmbaaszy401aw01qy84dyhja7';
     const styleDespues = 'mapbox://styles/nataliagquintanilla/cmbadahuh009h01qoe5taeykn';
     const styleToUse = this.mapStyle === 'antes' ? styleAntes : styleDespues;
@@ -245,10 +213,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
 
   cambiarEstiloMapa(estilo: 'antes' | 'despues'): void {
     this.mapStyle = estilo;
-
-    // ✅ Cambiar KPIs según el estilo
     this.resumenKpi = estilo === 'antes' ? this.kpisAntes : this.kpisDespues;
-
     if (this.mapNacional) {
       this.mapNacional.remove();
     }

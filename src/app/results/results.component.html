@@ -11,53 +11,52 @@
 
 <div class="d-flex">
   <!-- Sidebar -->
-<div class="sidebar bg-dark text-white d-flex flex-column p-3" style="width: 220px; height: 100vh;">
-  <h4 class="mb-4">Dashboard</h4>
-  <div class="mb-3">
-    <input type="text" class="form-control bg-secondary text-white border-0" placeholder="Search...">
+  <div class="sidebar bg-dark text-white d-flex flex-column p-3" style="width: 220px; height: 100vh;">
+    <h4 class="mb-4">Dashboard</h4>
+    <div class="mb-3">
+      <input type="text" class="form-control bg-secondary text-white border-0" placeholder="Search...">
+    </div>
+    <small class="text-muted text-uppercase">Navigation</small>
+    <ul class="nav flex-column mt-2">
+      <li class="nav-item">
+        <button (click)="setSection('dashboard')" 
+                class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+                [ngClass]="{'active-btn': activeSection === 'dashboard'}">
+          <i class="bi bi-speedometer2 me-2"></i> Dashboards
+        </button>
+
+        <button (click)="setSection('bases')" 
+                class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+                [ngClass]="{'active-btn': activeSection === 'bases'}">
+          <i class="bi bi-archive me-2"></i> Bases de Datos
+        </button>
+
+        <button (click)="setSection('rutas')" 
+                class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+                [ngClass]="{'active-btn': activeSection === 'rutas'}">
+          <i class="bi bi-signpost-split me-2"></i> Rutas
+        </button>
+
+        <button (click)="setSection('plan')" 
+                class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+                [ngClass]="{'active-btn': activeSection === 'plan'}">
+          <i class="bi bi-currency-dollar me-2"></i> Plan Financiero
+        </button>
+
+        <button (click)="setSection('estrategia')" 
+                class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+                [ngClass]="{'active-btn': activeSection === 'estrategia'}">
+          <i class="bi bi-diagram-3 me-2"></i> Estrategia
+        </button>
+
+        <button (click)="setSection('conclusiones')" 
+                class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
+                [ngClass]="{'active-btn': activeSection === 'conclusiones'}">
+          <i class="bi bi-journal-check me-2"></i> Conclusiones
+        </button>
+      </li>
+    </ul>
   </div>
-  <small class="text-muted text-uppercase">Navigation</small>
-  <ul class="nav flex-column mt-2">
-    <li class="nav-item">
-      <button (click)="setSection('dashboard')" 
-              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
-              [ngClass]="{'active-btn': activeSection === 'dashboard'}">
-        <i class="bi bi-speedometer2 me-2"></i> Dashboards
-      </button>
-
-      <button (click)="setSection('bases')" 
-              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
-              [ngClass]="{'active-btn': activeSection === 'bases'}">
-        <i class="bi bi-archive me-2"></i> Bases de Datos
-      </button>
-
-      <button (click)="setSection('rutas')" 
-              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
-              [ngClass]="{'active-btn': activeSection === 'rutas'}">
-        <i class="bi bi-signpost-split me-2"></i> Rutas
-      </button>
-
-      <button (click)="setSection('plan')" 
-              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
-              [ngClass]="{'active-btn': activeSection === 'plan'}">
-        <i class="bi bi-currency-dollar me-2"></i> Plan Financiero
-      </button>
-
-      <button (click)="setSection('estrategia')" 
-              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
-              [ngClass]="{'active-btn': activeSection === 'estrategia'}">
-        <i class="bi bi-diagram-3 me-2"></i> Estrategia
-      </button>
-
-      <button (click)="setSection('conclusiones')" 
-              class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
-              [ngClass]="{'active-btn': activeSection === 'conclusiones'}">
-        <i class="bi bi-journal-check me-2"></i> Conclusiones
-      </button>
-    </li>
-  </ul>
-</div>
-
 
   <!-- Main content -->
   <div class="p-4 flex-grow-1">
@@ -75,6 +74,37 @@
         </div>
       </div>
 
+      <!-- FILTROS -->
+      <div class="card mb-4 shadow-sm border-0 rounded-4 p-3" style="max-width: 300px;">
+        <h5 class="fw-bold mb-3">Filtros</h5>
+        <div class="mb-3">
+          <label class="form-label d-block">Selecciona Semestre:</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="semestre" id="s1" value="Semestre 1"
+                   [(ngModel)]="semestre" (change)="cargarDatos()">
+            <label class="form-check-label" for="s1">Semestre 1</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="semestre" id="s2" value="Semestre 2"
+                   [(ngModel)]="semestre" (change)="cargarDatos()">
+            <label class="form-check-label" for="s2">Semestre 2</label>
+          </div>
+        </div>
+        <div class="mb-2">
+          <label class="form-label d-block">Tipo de centro</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="tipoCentro" id="nuevos" value="Nuevos"
+                   [(ngModel)]="tipoCentro" (change)="cargarDatos()">
+            <label class="form-check-label" for="nuevos">Nuevos</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="tipoCentro" id="viejos" value="Viejos"
+                   [(ngModel)]="tipoCentro" (change)="cargarDatos()">
+            <label class="form-check-label" for="viejos">Viejos</label>
+          </div>
+        </div>
+      </div>
+
       <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
         <div class="card-header bg-white fw-bold">Mapa de Centros - Nuevo León</div>
         <div class="card-body p-0">
@@ -88,11 +118,101 @@
         <p><strong>Longitud:</strong> {{ selectedFeatureProps['longitude'] }}</p>
         <button class="btn btn-sm btn-outline-secondary mt-2" (click)="selectedFeatureProps = null">Cerrar</button>
       </div>
+
+      <!-- KPIs del backend -->
+      <!-- KPIs - Estilo completo como en el mock -->
+      <div class="row g-4" *ngIf="resumenKpi">
+        <div class="col-md-2 col-sm-6">
+          <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+            <h6 class="text-muted">Kilómetros recorridos</h6>
+            <h3 class="fw-bold text-primary">{{ resumenKpi.km }}</h3>
+            <small class="text-success">↓ 62,822 km reducidos</small>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-6">
+          <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+            <h6 class="text-muted">Emisiones de CO₂</h6>
+            <h3 class="fw-bold text-primary">{{ resumenKpi.co2 }}</h3>
+            <small class="text-success">↓ 21,901 kg evitados</small>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+            <h6 class="text-muted">Gasto estimado en gasolina</h6>
+            <h3 class="fw-bold text-primary">{{ resumenKpi.gasto }}</h3>
+            <small class="text-success">↓ $216,134 ahorrados</small>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+            <h6 class="text-muted">Costo promedio por ruta</h6>
+            <h3 class="fw-bold text-primary">{{ resumenKpi.promedio }}</h3>
+            <small class="text-success">↓ $1377.89 por ruta</small>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-6">
+          <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+            <h6 class="text-muted">Total de rutas</h6>
+            <h3 class="fw-bold text-primary">{{ resumenKpi.totalRutas }}</h3>
+            <small class="text-success">↓ 40 rutas menos</small>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Gráfica: Emisiones CO₂ -->
+      <!-- Emisiones CO₂ - Barras agrupadas -->
+      <div class="card mt-4 shadow-sm border-0 rounded-4">
+        <div class="card-header bg-white fw-bold">Emisiones de CO₂ por Mes</div>
+        <div class="card-body">
+          <canvas baseChart
+                  [data]="barChartDataCo2"
+                  [labels]="barChartLabelsCo2"
+                  [type]="'bar'"
+                  [options]="{ responsive: true }">
+          </canvas>
+        </div>
+      </div>
+
+      <!-- Gráfica: Gasto gasolina -->
+      <!-- Gasto gasolina por centro - Línea -->
+      <div class="card mt-4 shadow-sm border-0 rounded-4">
+        <div class="card-header bg-white fw-bold">Costo de Gasolina por centro</div>
+        <div class="card-body">
+          <canvas baseChart
+                  [data]="lineChartDataGasolina"
+                  [labels]="lineChartLabelsGasolina"
+                  [type]="'line'"
+                  [options]="{
+                    responsive: true,
+                    elements: {
+                      line: { tension: 0.3 }
+                    }
+                  }">
+          </canvas>
+        </div>
+      </div>
+
+
+
+      <!-- Distribución de distancias -->
+      <!-- Distribución de distancia - Área -->
+      <div class="card mt-4 shadow-sm border-0 rounded-4">
+        <div class="card-header bg-white fw-bold">Distribución de distancia recorrida</div>
+        <div class="card-body">
+          <canvas baseChart
+                  [data]="areaChartDataDistancia"
+                  [labels]="areaChartLabelsDistancia"
+                  [type]="'line'"
+                  [options]="{ responsive: true, elements: { line: { tension: 0.4 }, point: { radius: 0 } } }">
+          </canvas>
+        </div>
+      </div>
+
     </div>
 
     <!-- DASHBOARD NACIONAL -->
     <div *ngIf="activeSection === 'dashboard-nacional'" class="container-fluid px-0">
-
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h1 class="fw-bold">Centros de Distribución Nacional</h1>
@@ -104,25 +224,7 @@
         </div>
       </div>
 
-      <!-- FILTROS 
-      <div class="row g-3 mb-4">
-        <div class="col-md-4">
-          <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-          <input [(ngModel)]="filters.fechaInicio" (change)="applyFilters()" type="date" id="fechaInicio" class="form-control">
-        </div>
-        <div class="col-md-4">
-          <label for="fechaFin" class="form-label">Fecha Fin</label>
-          <input [(ngModel)]="filters.fechaFin" (change)="applyFilters()" type="date" id="fechaFin" class="form-control">
-        </div>
-        <div class="col-md-4">
-          <label for="estadoSelect" class="form-label">Estados</label>
-          <select multiple class="form-select" id="estadoSelect" [(ngModel)]="filters.estados" (change)="applyFilters()">
-            <option *ngFor="let estado of estadosDisponibles" [value]="estado">{{ estado }}</option>
-          </select>
-        </div>
-      </div> -->
-
-      <!-- KPIs -->
+      <!-- KPIs dummy -->
       <div class="row g-3 mb-4" *ngIf="resumenKpi">
         <div class="col-md-2 col-sm-6">
           <div class="card text-center shadow-sm p-3 border-0 rounded-4">
@@ -161,7 +263,7 @@
         </div>
       </div>
 
-      <!-- Mapa -->
+      <!-- Mapa nacional -->
       <div class="card shadow-sm border-0 rounded-4">
         <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
           <span>Red de distribución</span>
@@ -178,7 +280,6 @@
           <div id="mapNacional" style="height: 320px; width: 100%;"></div>
         </div>
       </div>
-
     </div>
 
   </div>
