@@ -1,10 +1,26 @@
-body {
+html, body {
+  height: 100%;
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f4f6f9;
 }
 
+/* ========== LAYOUT FLEX FIX ========== */
+body > .d-flex {
+  min-height: 100vh;  /* Asegura que el flex container siempre ocupa toda la pantalla */
+  display: flex;
+}
+
 /* ========== SIDEBAR ========== */
+.sidebar {
+  background-color: #1d1d1d;
+  height: auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;        /* 👈 Previene que se achique si el contenido es más alto */
+}
+
 .sidebar .nav-link {
   font-size: 15px;
   padding: 10px 15px;
@@ -120,20 +136,31 @@ thead.sticky-top th {
   margin: 0;
 }
 
-/* Para barras */
-canvas.bar-chart {
-  width: 100% !important;
-  height: 280px !important;
+/* ========== CHARTS Y MAPAS MÁS PEQUEÑOS ========== */
+#map {
+  height: 230px !important;
 }
 
-/* Para pie chart: deja que Chart.js lo maneje */
+#mapNacional {
+  height: 230px !important;
+}
+
+.card-body canvas {
+  height: 230px !important;
+}
+
+canvas.bar-chart {
+  width: 100% !important;
+  height: 230px !important;
+}
+
 canvas.pie-chart {
   width: auto !important;
   height: auto !important;
   max-width: 100%;
 }
 
-/* Responsive padding fix */
+/* Responsive fix */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
