@@ -22,8 +22,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   selectedFeatureProps: any = null;
   mapStyle: 'antes' | 'despues' = 'despues';
 
-  // Filtros
-  semestre: string = 'Semestre 1';
+  // Filtro activo
   tipoCentro: string = 'Nuevos';
 
   resumenKpi: any = null;
@@ -51,9 +50,9 @@ export class ResultsComponent implements AfterViewInit, OnInit {
 
   cargarDatos(): void {
     const baseUrl = 'https://backend-danu.onrender.com';
+    const ordenMeses = ['Jan 2018', 'Feb 2018', 'Mar 2018', 'Apr 2018', 'May 2018', 'Jun 2018'];
 
     const params = {
-      semestre: this.semestre,
       tipo_centro: this.tipoCentro
     };
 
@@ -80,7 +79,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
         meses.add(d.mes);
       });
 
-      const labels = Array.from(meses).sort();
+      const labels = ordenMeses.filter(m => meses.has(m));
       const datasets = Object.entries(grouped).map(([centro, values]: any) => ({
         label: centro,
         data: labels.map(mes => values[mes] || 0),
@@ -120,7 +119,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
         meses.add(d.mes);
       });
 
-      const labels = Array.from(meses).sort();
+      const labels = ordenMeses.filter(m => meses.has(m));
       const datasets = Object.entries(grouped).map(([centro, values]: any) => ({
         label: centro,
         data: labels.map(mes => values[mes] || 0),

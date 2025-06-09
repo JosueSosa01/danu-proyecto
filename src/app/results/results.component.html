@@ -24,31 +24,26 @@
                 [ngClass]="{'active-btn': activeSection === 'dashboard'}">
           <i class="bi bi-speedometer2 me-2"></i> Dashboards
         </button>
-
         <button (click)="setSection('bases')" 
                 class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
                 [ngClass]="{'active-btn': activeSection === 'bases'}">
           <i class="bi bi-archive me-2"></i> Bases de Datos
         </button>
-
         <button (click)="setSection('rutas')" 
                 class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
                 [ngClass]="{'active-btn': activeSection === 'rutas'}">
           <i class="bi bi-signpost-split me-2"></i> Rutas
         </button>
-
         <button (click)="setSection('plan')" 
                 class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
                 [ngClass]="{'active-btn': activeSection === 'plan'}">
           <i class="bi bi-currency-dollar me-2"></i> Plan Financiero
         </button>
-
         <button (click)="setSection('estrategia')" 
                 class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
                 [ngClass]="{'active-btn': activeSection === 'estrategia'}">
           <i class="bi bi-diagram-3 me-2"></i> Estrategia
         </button>
-
         <button (click)="setSection('conclusiones')" 
                 class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
                 [ngClass]="{'active-btn': activeSection === 'conclusiones'}">
@@ -60,13 +55,12 @@
 
   <!-- Main content -->
   <div class="p-4 flex-grow-1">
-
     <!-- DASHBOARD NUEVO LEÓN -->
-    <div *ngIf="activeSection === 'dashboard'" class="d-flex flex-column gap-4">
-      <div class="d-flex justify-content-between align-items-center mb-3">
+    <div *ngIf="activeSection === 'dashboard'" class="d-flex flex-column gap-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
         <div>
-          <h1 class="fw-bold">Centros de Distribución de Nuevo León</h1>
-          <p class="text-muted">Visualización local en Monterrey y alrededores.</p>
+          <h3 class="fw-bold mb-0">Centros de Distribución de Nuevo León</h3>
+          <p class="text-muted mb-0 small">Visualización local en Monterrey y alrededores.</p>
         </div>
         <div>
           <button class="btn btn-outline-primary me-2" (click)="setSection('dashboard')">Ver NL</button>
@@ -74,149 +68,118 @@
         </div>
       </div>
 
-      <!-- FILTROS -->
-      <div class="card mb-4 shadow-sm border-0 rounded-4 p-3" style="max-width: 300px;">
-        <h5 class="fw-bold mb-3">Filtros</h5>
-        <div class="mb-3">
-          <label class="form-label d-block">Selecciona Semestre:</label>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="semestre" id="s1" value="Semestre 1"
-                   [(ngModel)]="semestre" (change)="cargarDatos()">
-            <label class="form-check-label" for="s1">Semestre 1</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="semestre" id="s2" value="Semestre 2"
-                   [(ngModel)]="semestre" (change)="cargarDatos()">
-            <label class="form-check-label" for="s2">Semestre 2</label>
-          </div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label d-block">Tipo de centro</label>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="tipoCentro" id="nuevos" value="Nuevos"
-                   [(ngModel)]="tipoCentro" (change)="cargarDatos()">
-            <label class="form-check-label" for="nuevos">Nuevos</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="tipoCentro" id="viejos" value="Viejos"
-                   [(ngModel)]="tipoCentro" (change)="cargarDatos()">
-            <label class="form-check-label" for="viejos">Viejos</label>
+      <!-- Fila 1: Filtros + KPIs -->
+      <div class="d-flex flex-wrap gap-3 align-items-center">
+        <!-- Filtro (más compacto) -->
+        <div class="card shadow-sm border-0 rounded-4 px-3 py-1 d-flex justify-content-center" style="min-width: 200px; height: 50px;">
+          <div class="d-flex align-items-center h-100">
+            <strong class="me-2 small">Tipo de centro:</strong>
+            <div class="form-check form-check-inline mb-0">
+              <input class="form-check-input" type="radio" name="tipoCentro" id="nuevos" value="Nuevos"
+                     [(ngModel)]="tipoCentro" (change)="cargarDatos()" />
+              <label class="form-check-label me-2 small" for="nuevos">Nuevos</label>
+            </div>
+            <div class="form-check form-check-inline mb-0">
+              <input class="form-check-input" type="radio" name="tipoCentro" id="viejos" value="Viejos"
+                     [(ngModel)]="tipoCentro" (change)="cargarDatos()" />
+              <label class="form-check-label small" for="viejos">Viejos</label>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-        <div class="card-header bg-white fw-bold">Mapa de Centros - Nuevo León</div>
-        <div class="card-body p-0">
-          <div id="map" style="height: 320px; width: 100%;"></div>
-        </div>
-      </div>
-
-      <div *ngIf="selectedFeatureProps" class="card mt-3 p-3 shadow-sm border-0 rounded-4">
-        <h5 class="fw-bold">Centro #{{ selectedFeatureProps['Centro_ID'] }}</h5>
-        <p><strong>Latitud:</strong> {{ selectedFeatureProps['latitude'] }}</p>
-        <p><strong>Longitud:</strong> {{ selectedFeatureProps['longitude'] }}</p>
-        <button class="btn btn-sm btn-outline-secondary mt-2" (click)="selectedFeatureProps = null">Cerrar</button>
-      </div>
-
-      <!-- KPIs del backend -->
-      <!-- KPIs - Estilo completo como en el mock -->
-      <div class="row g-4" *ngIf="resumenKpi">
-        <div class="col-md-2 col-sm-6">
-          <div class="card shadow-sm border-0 rounded-4 text-center p-3">
-            <h6 class="text-muted">Kilómetros recorridos</h6>
-            <h3 class="fw-bold text-primary">{{ resumenKpi.km }}</h3>
-            <small class="text-success">↓ 62,822 km reducidos</small>
+        <!-- KPIs -->
+        <div *ngIf="resumenKpi" class="d-flex flex-wrap gap-2 flex-grow-1">
+          <div class="card shadow-sm border-0 rounded-4 px-3 py-2 text-center" style="width: 170px; height: 70px;">
+            <div class="text-muted small">Kilómetros recorridos</div>
+            <div class="fw-bold text-primary fs-6">{{ resumenKpi.km }}</div>
           </div>
-        </div>
-        <div class="col-md-2 col-sm-6">
-          <div class="card shadow-sm border-0 rounded-4 text-center p-3">
-            <h6 class="text-muted">Emisiones de CO₂</h6>
-            <h3 class="fw-bold text-primary">{{ resumenKpi.co2 }}</h3>
-            <small class="text-success">↓ 21,901 kg evitados</small>
+          <div class="card shadow-sm border-0 rounded-4 px-3 py-2 text-center" style="width: 170px; height: 70px;">
+            <div class="text-muted small">Emisiones de CO₂</div>
+            <div class="fw-bold text-primary fs-6">{{ resumenKpi.co2 }}</div>
           </div>
-        </div>
-        <div class="col-md-3 col-sm-6">
-          <div class="card shadow-sm border-0 rounded-4 text-center p-3">
-            <h6 class="text-muted">Gasto estimado en gasolina</h6>
-            <h3 class="fw-bold text-primary">{{ resumenKpi.gasto }}</h3>
-            <small class="text-success">↓ $216,134 ahorrados</small>
+          <div class="card shadow-sm border-0 rounded-4 px-3 py-2 text-center" style="width: 170px; height: 70px;">
+            <div class="text-muted small">Gasto gasolina</div>
+            <div class="fw-bold text-primary fs-6">{{ resumenKpi.gasto }}</div>
           </div>
-        </div>
-        <div class="col-md-3 col-sm-6">
-          <div class="card shadow-sm border-0 rounded-4 text-center p-3">
-            <h6 class="text-muted">Costo promedio por ruta</h6>
-            <h3 class="fw-bold text-primary">{{ resumenKpi.promedio }}</h3>
-            <small class="text-success">↓ $1377.89 por ruta</small>
+          <div class="card shadow-sm border-0 rounded-4 px-3 py-2 text-center" style="width: 170px; height: 70px;">
+            <div class="text-muted small">Costo promedio por ruta</div>
+            <div class="fw-bold text-primary fs-6">{{ resumenKpi.promedio }}</div>
           </div>
-        </div>
-        <div class="col-md-2 col-sm-6">
-          <div class="card shadow-sm border-0 rounded-4 text-center p-3">
-            <h6 class="text-muted">Total de rutas</h6>
-            <h3 class="fw-bold text-primary">{{ resumenKpi.totalRutas }}</h3>
-            <small class="text-success">↓ 40 rutas menos</small>
+          <div class="card shadow-sm border-0 rounded-4 px-3 py-2 text-center" style="width: 170px; height: 70px;">
+            <div class="text-muted small">Total de rutas</div>
+            <div class="fw-bold text-primary fs-6">{{ resumenKpi.totalRutas }}</div>
           </div>
         </div>
       </div>
 
-
-      <!-- Gráfica: Emisiones CO₂ -->
-      <!-- Emisiones CO₂ - Barras agrupadas -->
-      <div class="card mt-4 shadow-sm border-0 rounded-4">
-        <div class="card-header bg-white fw-bold">Emisiones de CO₂ por Mes</div>
-        <div class="card-body">
-          <canvas baseChart
-                  [data]="barChartDataCo2"
-                  [labels]="barChartLabelsCo2"
-                  [type]="'bar'"
-                  [options]="{ responsive: true }">
-          </canvas>
+      <!-- Fila 2: Mapa + Gasolina -->
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100">
+            <div class="card-header bg-white fw-bold">Mapa de Centros - Nuevo León</div>
+            <div class="card-body p-0">
+              <div id="map" style="height: 320px; width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-header bg-white fw-bold">Costo de Gasolina por centro</div>
+            <div class="card-body">
+              <canvas baseChart
+                      [data]="lineChartDataGasolina"
+                      [labels]="lineChartLabelsGasolina"
+                      [type]="'line'"
+                      [options]="{
+                        responsive: true,
+                        elements: { line: { tension: 0.3 } }
+                      }">
+              </canvas>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Gráfica: Gasto gasolina -->
-      <!-- Gasto gasolina por centro - Línea -->
-      <div class="card mt-4 shadow-sm border-0 rounded-4">
-        <div class="card-header bg-white fw-bold">Costo de Gasolina por centro</div>
-        <div class="card-body">
-          <canvas baseChart
-                  [data]="lineChartDataGasolina"
-                  [labels]="lineChartLabelsGasolina"
-                  [type]="'line'"
-                  [options]="{
-                    responsive: true,
-                    elements: {
-                      line: { tension: 0.3 }
-                    }
-                  }">
-          </canvas>
+      <!-- Fila 3: CO₂ + Distancia -->
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-header bg-white fw-bold">Emisiones de CO₂ por Mes</div>
+            <div class="card-body">
+              <canvas baseChart
+                      [data]="barChartDataCo2"
+                      [labels]="barChartLabelsCo2"
+                      [type]="'bar'"
+                      [options]="{ responsive: true }">
+              </canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-header bg-white fw-bold">Distribución de distancia recorrida</div>
+            <div class="card-body">
+              <canvas baseChart
+                      [data]="areaChartDataDistancia"
+                      [labels]="areaChartLabelsDistancia"
+                      [type]="'line'"
+                      [options]="{
+                        responsive: true,
+                        elements: { line: { tension: 0.4 }, point: { radius: 0 } }
+                      }">
+              </canvas>
+            </div>
+          </div>
         </div>
       </div>
-
-
-
-      <!-- Distribución de distancias -->
-      <!-- Distribución de distancia - Área -->
-      <div class="card mt-4 shadow-sm border-0 rounded-4">
-        <div class="card-header bg-white fw-bold">Distribución de distancia recorrida</div>
-        <div class="card-body">
-          <canvas baseChart
-                  [data]="areaChartDataDistancia"
-                  [labels]="areaChartLabelsDistancia"
-                  [type]="'line'"
-                  [options]="{ responsive: true, elements: { line: { tension: 0.4 }, point: { radius: 0 } } }">
-          </canvas>
-        </div>
-      </div>
-
     </div>
 
     <!-- DASHBOARD NACIONAL -->
     <div *ngIf="activeSection === 'dashboard-nacional'" class="container-fluid px-0">
-      <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <h1 class="fw-bold">Centros de Distribución Nacional</h1>
-          <p class="text-muted">Visualización a nivel nacional.</p>
+          <h3 class="fw-bold mb-0">Centros de Distribución Nacional</h3>
+          <p class="text-muted small mb-0">Visualización a nivel nacional.</p>
         </div>
         <div>
           <button class="btn btn-outline-secondary me-2" (click)="setSection('dashboard')">Ver NL</button>
@@ -224,41 +187,19 @@
         </div>
       </div>
 
-      <!-- KPIs dummy -->
-      <div class="row g-3 mb-4" *ngIf="resumenKpi">
-        <div class="col-md-2 col-sm-6">
+      <!-- KPIs Nacional -->
+      <div class="row g-3 mb-3" *ngIf="resumenKpi">
+        <div class="col-md-2 col-sm-6" *ngFor="let kpi of [
+          { label: 'Total Orders', value: resumenKpi.totalOrders, change: resumenKpi.orderChange, color: 'success' },
+          { label: 'Avg Delivery Time', value: resumenKpi.avgDeliveryTime + ' días', change: resumenKpi.avgDeliveryChange, color: 'danger' },
+          { label: 'On-Time Delivery', value: resumenKpi.onTime + '%', change: resumenKpi.onTimeChange, color: 'success' },
+          { label: 'Delayed Deliveries', value: resumenKpi.delayed + '%', change: resumenKpi.delayedChange, color: 'danger' },
+          { label: 'Distribution Centers', value: resumenKpi.centros, change: '+1 new center', color: 'success' }
+        ]">
           <div class="card text-center shadow-sm p-3 border-0 rounded-4">
-            <h6 class="text-muted">Total Orders</h6>
-            <h3 class="fw-bold text-primary">{{ resumenKpi.totalOrders }}</h3>
-            <small class="text-success">↑ {{ resumenKpi.orderChange }}%</small>
-          </div>
-        </div>
-        <div class="col-md-2 col-sm-6">
-          <div class="card text-center shadow-sm p-3 border-0 rounded-4">
-            <h6 class="text-muted">Avg Delivery Time</h6>
-            <h3 class="fw-bold text-danger">{{ resumenKpi.avgDeliveryTime }} días</h3>
-            <small class="text-danger">↓ {{ resumenKpi.avgDeliveryChange }} días</small>
-          </div>
-        </div>
-        <div class="col-md-2 col-sm-6">
-          <div class="card text-center shadow-sm p-3 border-0 rounded-4">
-            <h6 class="text-muted">On-Time Delivery</h6>
-            <h3 class="fw-bold text-success">{{ resumenKpi.onTime }}%</h3>
-            <small class="text-success">↑ {{ resumenKpi.onTimeChange }}%</small>
-          </div>
-        </div>
-        <div class="col-md-2 col-sm-6">
-          <div class="card text-center shadow-sm p-3 border-0 rounded-4">
-            <h6 class="text-muted">Delayed Deliveries</h6>
-            <h3 class="fw-bold text-warning">{{ resumenKpi.delayed }}%</h3>
-            <small class="text-danger">↓ {{ resumenKpi.delayedChange }}%</small>
-          </div>
-        </div>
-        <div class="col-md-2 col-sm-6">
-          <div class="card text-center shadow-sm p-3 border-0 rounded-4">
-            <h6 class="text-muted">Distribution Centers</h6>
-            <h3 class="fw-bold">{{ resumenKpi.centros }}</h3>
-            <small class="text-success">+1 new center</small>
+            <h6 class="text-muted">{{ kpi.label }}</h6>
+            <h3 class="fw-bold text-{{ kpi.color }}">{{ kpi.value }}</h3>
+            <small class="text-{{ kpi.color }}">{{ kpi.change }}</small>
           </div>
         </div>
       </div>
@@ -281,7 +222,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
