@@ -16,18 +16,15 @@ import mapboxgl from 'mapbox-gl';
 export class ResultsComponent implements AfterViewInit, OnInit {
   activeSection: string = 'dashboard-nacional';
 
-  // Mapas
   map!: mapboxgl.Map;
   mapNacional!: mapboxgl.Map;
   selectedFeatureProps: any = null;
   mapStyle: 'antes' | 'despues' = 'antes';
 
-  // Filtro activo
   tipoCentro: string = 'Nuevos';
 
   resumenKpi: any = null;
 
-  // KPI dummy para nacional
   kpisAntes = {
     totalOrders: 1248,
     orderChange: 15.3,
@@ -39,6 +36,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
     delayedChange: -3.0,
     centros: 7
   };
+
   kpisDespues = {
     totalOrders: 1248,
     orderChange: 12.5,
@@ -51,7 +49,6 @@ export class ResultsComponent implements AfterViewInit, OnInit {
     centros: 7
   };
 
-  // Gráficas
   lineChartLabelsGasolina: string[] = [];
   lineChartDataGasolina: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
 
@@ -64,7 +61,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.setSection('dashboard-nacional'); // 👈 Nacional primero
+    this.setSection('dashboard-nacional');
   }
 
   setSection(section: string): void {
@@ -72,10 +69,10 @@ export class ResultsComponent implements AfterViewInit, OnInit {
 
     setTimeout(() => {
       if (section === 'dashboard') {
-        this.cargarDatos(); // carga los KPIs locales
+        this.cargarDatos();
         this.initializeMap();
       } else if (section === 'dashboard-nacional') {
-        this.cambiarEstiloMapa(this.mapStyle); // aplica estilo actual
+        this.cambiarEstiloMapa(this.mapStyle);
       }
     }, 0);
   }
@@ -111,7 +108,6 @@ export class ResultsComponent implements AfterViewInit, OnInit {
       tipo_centro: this.tipoCentro
     };
 
-    // KPIs
     this.http.get<any>(`${baseUrl}/kpis`, { params }).subscribe(data => {
       this.resumenKpi = {
         km: data['Kilómetros recorridos'],
@@ -122,7 +118,6 @@ export class ResultsComponent implements AfterViewInit, OnInit {
       };
     });
 
-    // Gasto gasolina por centro
     this.http.get<any[]>(`${baseUrl}/charts/gasolina`, { params }).subscribe(data => {
       const grouped: any = {};
       const meses: Set<string> = new Set();
@@ -146,7 +141,6 @@ export class ResultsComponent implements AfterViewInit, OnInit {
       this.lineChartDataGasolina = { labels, datasets };
     });
 
-    // Distancia recorrida
     this.http.get<any[]>(`${baseUrl}/charts/distancia`, { params }).subscribe(data => {
       const labels = data.map(d => d.rango_km);
       const dataset = {
@@ -162,7 +156,6 @@ export class ResultsComponent implements AfterViewInit, OnInit {
       this.areaChartDataDistancia = { labels, datasets: [dataset] };
     });
 
-    // CO2
     this.http.get<any[]>(`${baseUrl}/charts/co2`, { params }).subscribe(data => {
       const grouped: any = {};
       const meses: Set<string> = new Set();
@@ -188,6 +181,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
 
   initializeMap(): void {
     mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
+
     this.map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/nataliagquintanilla/cmbadctro016n01sdbtju3v3n',
@@ -217,8 +211,8 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   initializeMapNacional(): void {
     mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
 
-    const styleAntes = 'mapbox://styles/nataliagquintanilla/cmbaaszy401aw01qy84dyhja7';
-    const styleDespues = 'mapbox://styles/nataliagquintanilla/cmbadahuh009h01qoe5taeykn';
+    const styleAntes = 'mapbox://styles/nataliagquintanilla/cmblfn9mi000001ruc2bc84io';
+    const styleDespues = 'mapbox://styles/nataliagquintanilla/cmblfzus200ee01s9cde6am1w';
     const styleToUse = this.mapStyle === 'antes' ? styleAntes : styleDespues;
 
     this.mapNacional = new mapboxgl.Map({
