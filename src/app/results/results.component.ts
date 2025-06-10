@@ -73,6 +73,9 @@ export class ResultsComponent implements AfterViewInit, OnInit {
         this.initializeMap();
       } else if (section === 'dashboard-nacional') {
         this.cambiarEstiloMapa(this.mapStyle);
+      } else if (section === 'plan') {
+        console.log('✔ Sección Plan Financiero activada');
+        // Aquí podrías cargar datos adicionales si se desea más adelante
       }
     }, 0);
   }
@@ -104,9 +107,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
     const baseUrl = 'https://backend-danu.onrender.com';
     const ordenMeses = ['Jan 2018', 'Feb 2018', 'Mar 2018', 'Apr 2018', 'May 2018', 'Jun 2018'];
 
-    const params = {
-      tipo_centro: this.tipoCentro
-    };
+    const params = { tipo_centro: this.tipoCentro };
 
     this.http.get<any>(`${baseUrl}/kpis`, { params }).subscribe(data => {
       this.resumenKpi = {
