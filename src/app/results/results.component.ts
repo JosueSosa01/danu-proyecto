@@ -55,6 +55,35 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   areaChartLabelsDistancia: string[] = [];
   areaChartDataDistancia: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
 
+  lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
+    responsive: true,
+    scales: {
+      x: {
+        type: 'linear',
+        title: { display: true, text: 'Distancia (km)' },
+        ticks: {
+          stepSize: 100,
+          callback: function (value: any) {
+            return value + ' km';
+          }
+        }
+      },
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: 'Frecuencia' }
+      }
+    },
+    elements: {
+      line: {
+        tension: 0,
+        borderWidth: 1.5
+      },
+      point: {
+        radius: 0
+      }
+    }
+  };
+
   barChartLabelsCo2: string[] = [];
   barChartDataCo2: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
 
@@ -169,27 +198,31 @@ export class ResultsComponent implements AfterViewInit, OnInit {
     // Gráfico distancia
     this.http.get<any[]>(`${this.baseUrl}/charts/distancia`, { params }).subscribe(data => {
       const grouped: any = {};
-      const rangos: Set<string> = new Set();
 
       data.forEach(d => {
         const grupo = d.grupo;
-        if (!grouped[grupo]) grouped[grupo] = {};
-        grouped[grupo][d.rango_km] = d.frecuencia;
-        rangos.add(d.rango_km);
+        if (!grouped[grupo]) grouped[grupo] = [];
+        grouped[grupo].push({ x: +d.distancia_centro, y: +d.frecuencia });
       });
 
-      const labels = Array.from(rangos);
+      Object.entries(grouped).forEach(([grupo, puntos]: any) => {
+        puntos.sort((a: { x: number, y: number }, b: { x: number, y: number }) => a.x - b.x);
+        grouped[grupo] = [{ x: 0, y: 0 }, ...puntos];
+      });
+
       const datasets = Object.entries(grouped).map(([grupo, values]: any) => ({
         label: grupo,
-        data: labels.map(r => values[r] || 0),
-        fill: true,
+        data: values,
+        fill: 'origin',
         backgroundColor: this.colorRGBA(grupo, 0.3),
         borderColor: this.colorHex(grupo),
-        tension: 0.3
+        borderWidth: 1.5,
+        tension: 0,
+        stepped: false
       }));
 
-      this.areaChartLabelsDistancia = labels;
-      this.areaChartDataDistancia = { labels, datasets };
+      this.areaChartLabelsDistancia = [];
+      this.areaChartDataDistancia = { labels: [], datasets };
     });
 
     // Gráfico CO₂
