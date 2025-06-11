@@ -14,16 +14,16 @@ import mapboxgl from 'mapbox-gl';
   styleUrls: ['./results.component.css']
 })
 export class ResultsComponent implements AfterViewInit, OnInit {
-  activeSection: string = 'dashboard-nacional';
-
+  activeSection: string = 'dashboard';
   map!: mapboxgl.Map;
   mapNacional!: mapboxgl.Map;
   selectedFeatureProps: any = null;
   mapStyle: 'antes' | 'despues' = 'antes';
 
   tipoCentro: string = 'Nuevos';
-
-  resumenKpi: any = null;
+  visualizacion: string = 'Agrupadas';
+  centroEspecifico: string = 'Todos';
+  listaCentros: string[] = [];
 
   kpisAntes = {
     totalOrders: 1248,
@@ -36,7 +36,6 @@ export class ResultsComponent implements AfterViewInit, OnInit {
     delayedChange: -3.0,
     centros: 7
   };
-
   kpisDespues = {
     totalOrders: 1248,
     orderChange: 12.5,
@@ -48,6 +47,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
     delayedChange: 2.1,
     centros: 7
   };
+  resumenKpi: any = null;
 
   lineChartLabelsGasolina: string[] = [];
   lineChartDataGasolina: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
@@ -58,10 +58,24 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   barChartLabelsCo2: string[] = [];
   barChartDataCo2: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
 
+  readonly baseUrl = 'https://backend-danu.onrender.com';
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.setSection('dashboard-nacional');
+    this.setSection(this.activeSection);
+
+    if (this.tipoCentro === 'Nuevos') {
+      this.cargarCentros();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.activeSection === 'dashboard') {
+      this.initializeMap();
+    } else if (this.activeSection === 'dashboard-nacional') {
+      this.cambiarEstiloMapa(this.mapStyle);
+    }
   }
 
   setSection(section: string): void {
@@ -73,9 +87,6 @@ export class ResultsComponent implements AfterViewInit, OnInit {
         this.initializeMap();
       } else if (section === 'dashboard-nacional') {
         this.cambiarEstiloMapa(this.mapStyle);
-      } else if (section === 'plan') {
-        console.log('✔ Sección Plan Financiero activada');
-        // Aquí podrías cargar datos adicionales si se desea más adelante
       }
     }, 0);
   }
@@ -95,21 +106,32 @@ export class ResultsComponent implements AfterViewInit, OnInit {
     }, 100);
   }
 
-  ngAfterViewInit(): void {
-    if (this.activeSection === 'dashboard') {
-      this.initializeMap();
-    } else if (this.activeSection === 'dashboard-nacional') {
-      this.cambiarEstiloMapa(this.mapStyle);
+  onFiltroChange(): void {
+    this.cargarDatos();
+    if (this.tipoCentro === 'Nuevos') {
+      this.cargarCentros();
     }
   }
 
+  cargarCentros(): void {
+    if (this.tipoCentro !== 'Nuevos') return;
+
+    this.http.get<any>(`${this.baseUrl}/centros`, {
+      params: { tipo_centro: 'Nuevos' }
+    }).subscribe(data => {
+      this.listaCentros = data.centros || [];
+    });
+  }
+
   cargarDatos(): void {
-    const baseUrl = 'https://backend-danu.onrender.com';
-    const ordenMeses = ['Jan 2018', 'Feb 2018', 'Mar 2018', 'Apr 2018', 'May 2018', 'Jun 2018'];
+    const params: any = {
+      tipo_centro: this.tipoCentro,
+      visualizacion: this.visualizacion,
+      centro: this.centroEspecifico
+    };
 
-    const params = { tipo_centro: this.tipoCentro };
-
-    this.http.get<any>(`${baseUrl}/kpis`, { params }).subscribe(data => {
+    // KPIs
+    this.http.get<any>(`${this.baseUrl}/kpis`, { params }).subscribe(data => {
       this.resumenKpi = {
         km: data['Kilómetros recorridos'],
         co2: data['Emisiones de CO₂'],
@@ -119,60 +141,75 @@ export class ResultsComponent implements AfterViewInit, OnInit {
       };
     });
 
-    this.http.get<any[]>(`${baseUrl}/charts/gasolina`, { params }).subscribe(data => {
+    // Gráfico gasolina
+    this.http.get<any[]>(`${this.baseUrl}/charts/gasolina`, { params }).subscribe(data => {
       const grouped: any = {};
       const meses: Set<string> = new Set();
 
       data.forEach(d => {
-        const centro = d.tipo_centro;
-        if (!grouped[centro]) grouped[centro] = {};
-        grouped[centro][d.mes] = d.gasto_gasolina;
+        const grupo = d.grupo;
+        if (!grouped[grupo]) grouped[grupo] = {};
+        grouped[grupo][d.mes] = d.gasto_gasolina;
         meses.add(d.mes);
       });
 
+      const ordenMeses = ['Jan 2018', 'Feb 2018', 'Mar 2018', 'Apr 2018', 'May 2018', 'Jun 2018'];
       const labels = ordenMeses.filter(m => meses.has(m));
-      const datasets = Object.entries(grouped).map(([centro, values]: any) => ({
-        label: centro === 'Viejos' ? 'Antiguos' : centro,
+      const datasets = Object.entries(grouped).map(([grupo, values]: any) => ({
+        label: grupo,
         data: labels.map(mes => values[mes] || 0),
         fill: false,
-        borderColor: centro === 'Nuevos' ? '#36A2EB' : '#4BC0C0'
+        borderColor: this.colorHex(grupo)
       }));
 
       this.lineChartLabelsGasolina = labels;
       this.lineChartDataGasolina = { labels, datasets };
     });
 
-    this.http.get<any[]>(`${baseUrl}/charts/distancia`, { params }).subscribe(data => {
-      const labels = data.map(d => d.rango_km);
-      const dataset = {
-        label: 'Frecuencia',
-        data: data.map(d => d.frecuencia),
+    // Gráfico distancia
+    this.http.get<any[]>(`${this.baseUrl}/charts/distancia`, { params }).subscribe(data => {
+      const grouped: any = {};
+      const rangos: Set<string> = new Set();
+
+      data.forEach(d => {
+        const grupo = d.grupo;
+        if (!grouped[grupo]) grouped[grupo] = {};
+        grouped[grupo][d.rango_km] = d.frecuencia;
+        rangos.add(d.rango_km);
+      });
+
+      const labels = Array.from(rangos);
+      const datasets = Object.entries(grouped).map(([grupo, values]: any) => ({
+        label: grupo,
+        data: labels.map(r => values[r] || 0),
         fill: true,
-        backgroundColor: 'rgba(75,192,192,0.4)',
-        borderColor: '#4bc0c0',
+        backgroundColor: this.colorRGBA(grupo, 0.3),
+        borderColor: this.colorHex(grupo),
         tension: 0.3
-      };
+      }));
 
       this.areaChartLabelsDistancia = labels;
-      this.areaChartDataDistancia = { labels, datasets: [dataset] };
+      this.areaChartDataDistancia = { labels, datasets };
     });
 
-    this.http.get<any[]>(`${baseUrl}/charts/co2`, { params }).subscribe(data => {
+    // Gráfico CO₂
+    this.http.get<any[]>(`${this.baseUrl}/charts/co2`, { params }).subscribe(data => {
       const grouped: any = {};
       const meses: Set<string> = new Set();
 
       data.forEach(d => {
-        const centro = d.tipo_centro;
-        if (!grouped[centro]) grouped[centro] = {};
-        grouped[centro][d.mes] = d.co2_emitido;
+        const tipo = d.tipo_centro;
+        if (!grouped[tipo]) grouped[tipo] = {};
+        grouped[tipo][d.mes] = d.co2_emitido;
         meses.add(d.mes);
       });
 
+      const ordenMeses = ['Jan 2018', 'Feb 2018', 'Mar 2018', 'Apr 2018', 'May 2018', 'Jun 2018'];
       const labels = ordenMeses.filter(m => meses.has(m));
-      const datasets = Object.entries(grouped).map(([centro, values]: any) => ({
-        label: centro === 'Viejos' ? 'Antiguos' : centro,
+      const datasets = Object.entries(grouped).map(([tipo, values]: any) => ({
+        label: tipo,
         data: labels.map(mes => values[mes] || 0),
-        backgroundColor: centro === 'Nuevos' ? '#36A2EB' : '#4BC0C0'
+        backgroundColor: tipo === 'Nuevos' ? '#36A2EB' : '#4BC0C0'
       }));
 
       this.barChartLabelsCo2 = labels;
@@ -182,7 +219,6 @@ export class ResultsComponent implements AfterViewInit, OnInit {
 
   initializeMap(): void {
     mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
-
     this.map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/nataliagquintanilla/cmbadctro016n01sdbtju3v3n',
@@ -241,5 +277,17 @@ export class ResultsComponent implements AfterViewInit, OnInit {
         this.mapNacional.getCanvas().style.cursor = '';
       });
     });
+  }
+
+  private colorHex(grupo: string): string {
+    const hash = [...grupo].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hue = hash % 360;
+    return `hsl(${hue}, 70%, 50%)`;
+  }
+
+  private colorRGBA(grupo: string, alpha: number = 0.5): string {
+    const hash = [...grupo].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hue = hash % 360;
+    return `hsla(${hue}, 70%, 50%, ${alpha})`;
   }
 }
