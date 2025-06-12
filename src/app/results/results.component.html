@@ -143,7 +143,7 @@
         <div *ngFor="let kpi of [
           { label: 'Kilómetros recorridos', value: resumenKpi.km, diff: resumenKpiComparado[0]?.diferencia, icon: 'bi-arrow-down' },
           { label: 'Emisiones de CO₂', value: resumenKpi.co2, diff: resumenKpiComparado[1]?.diferencia, icon: 'bi-arrow-down' },
-          { label: 'Gasto gasolina', value: resumenKpi.gasto, diff: resumenKpiComparado[2]?.diferencia, icon: 'bi-arrow-up' },
+          { label: 'Gasto gasolina', value: resumenKpi.gasto, diff: resumenKpiComparado[2]?.diferencia, icon: 'bi-arrow-down' },
           { label: 'Costo promedio por ruta', value: resumenKpi.promedio, diff: resumenKpiComparado[3]?.diferencia, icon: 'bi-arrow-down' },
           { label: 'Total de rutas', value: resumenKpi.totalRutas, diff: resumenKpiComparado[4]?.diferencia, icon: 'bi-arrow-down' }
         ]" class="card shadow-sm border-0 rounded-4 px-2 py-2 text-center mx-2" style="width: 170px; height: 90px;">
@@ -232,21 +232,26 @@
     </div>
   </div>
 
-  <div class="row g-3 mb-3" *ngIf="resumenKpi">
-    <div class="col-md-2 col-sm-6" *ngFor="let kpi of [
-      { label: 'Total Orders', value: resumenKpi.totalOrders, change: resumenKpi.orderChange, color: 'success' },
-      { label: 'Avg Delivery Time', value: resumenKpi.avgDeliveryTime + ' días', change: resumenKpi.avgDeliveryChange, color: 'danger' },
-      { label: 'On-Time Delivery', value: resumenKpi.onTime + '%', change: resumenKpi.onTimeChange, color: 'success' },
-      { label: 'Delayed Deliveries', value: resumenKpi.delayed + '%', change: resumenKpi.delayedChange, color: 'danger' },
-      { label: 'Distribution Centers', value: resumenKpi.centros, change: '+1 new center', color: 'success' }
-    ]">
-      <div class="card text-center shadow-sm p-3 border-0 rounded-4">
-        <h6 class="text-muted">{{ kpi.label }}</h6>
-        <h3 class="fw-bold text-{{ kpi.color }}">{{ kpi.value }}</h3>
-        <small class="text-{{ kpi.color }}">{{ kpi.change }}</small>
-      </div>
+ <div class="row g-3 mb-3" *ngIf="resumenKpi">
+  <div class="col-md-2 col-sm-6" *ngFor="let kpi of [
+    { label: 'Total de pedidos', value: resumenKpi.totalOrders, change: resumenKpi.orderChange, color: 'dark' },
+    { label: 'Tiempo promedio de entrega', value: resumenKpi.avgDeliveryTime + ' días', change: resumenKpi.avgDeliveryChange, color: 'dark' },
+    { label: '% entregas a tiempo', value: resumenKpi.onTime + '%', change: resumenKpi.onTimeChange, color: 'dark' },
+    { label: '% entregas retrasadas', value: resumenKpi.delayed + '%', change: resumenKpi.delayedChange, color: 'dark' },
+    { label: 'N.º de centros de distribución', value: resumenKpi.centros, change: ' ', color: 'dark' },
+    { label: 'Kilómetros recorridos', value: resumenKpi.kilometros + 'km', change: resumenKpi.kilometrosdif + 'km', color: 'dark' },
+    { label: 'Gasto en gasolina', value: '$' + resumenKpi.gasolina, change: '$' + resumenKpi.gasolinadif, color: 'dark' },
+    { label: 'Emisiones de CO₂', value: resumenKpi.co2 + 'kg', change: resumenKpi.emisionesdif + 'kg', color: 'dark' },
+    { label: 'Costo promedio por ruta', value: '$' + resumenKpi.ruta, change: '$' + resumenKpi.rutadif, color: 'dark' }
+  ]">
+    <div class="card text-center shadow-sm border-0 rounded-4 h-100 card-kpi">
+      <h6 class="text-muted">{{ kpi.label }}</h6>
+      <h3 class="fw-bold text-{{ kpi.color }}">{{ kpi.value }}</h3>
+      <small class="text-{{ kpi.color }}">{{ kpi.change || '&nbsp;' }}</small>
     </div>
   </div>
+</div>
+
 
   <div class="card shadow-sm border-0 rounded-4">
     <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">

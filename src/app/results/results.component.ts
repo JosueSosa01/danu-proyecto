@@ -15,8 +15,8 @@ import mapboxgl from 'mapbox-gl';
   styleUrls: ['./results.component.css']
 })
 export class ResultsComponent implements AfterViewInit, OnInit {
-  activeSection: string = 'dashboard';
-  tipoCentro: string = 'Nuevos';
+  activeSection: string = 'dashboard-nacional';
+  tipoCentro: string = 'Antiguos';
   visualizacion: string = 'Agrupadas';
   centroEspecifico: string = 'Todos';
   listaCentros: string[] = [];
@@ -27,50 +27,74 @@ export class ResultsComponent implements AfterViewInit, OnInit {
   selectedFeatureProps: any = null;
 
   kpisAntes = {
-    totalOrders: 1248,
-    orderChange: 15.3,
-    avgDeliveryTime: 1.9,
-    avgDeliveryChange: -0.5,
-    onTime: 97.5,
-    onTimeChange: 3.3,
-    delayed: 2.5,
-    delayedChange: -3.0,
-    centros: 7
+    totalOrders: 100000,
+    orderChange: 0.09,
+    avgDeliveryTime: 2.1,
+    onTime: 95.8,
+    delayed: 4.2,
+    centros: 7,
+    kilometros: '4,620,000 ',
+    kilometrosdif: '0 ',
+    gasolina: '17,850,000 ',
+    gasolinadif: '0 ',
+    co2: '1,513,000 ',
+    emisionesdif: '0 ',
+    ruta: '1,614 ',
+    rutadif: '0 '
+
+
   };
   kpisDespues = {
-    totalOrders: 1248,
-    orderChange: 12.5,
-    avgDeliveryTime: 2.4,
-    avgDeliveryChange: 0.3,
-    onTime: 94.2,
-    onTimeChange: 2.1,
-    delayed: 5.8,
-    delayedChange: 2.1,
-    centros: 7
+    totalOrders: 100000,
+    orderChange: 0.09,
+    avgDeliveryTime: 1.9,
+    avgDeliveryChange: -0.2,
+    onTime: 97.5,
+    onTimeChange: 1.7,
+    delayed: 2.5,
+    delayedChange: -1.7,
+    centros: 7,
+    kilometros: '3,780,000 ',
+    kilometrosdif: '-840,000 ',
+    gasolina: '14,280,000 ',
+    gasolinadif: '-3,570,000 ',
+    co2: '1,238,000 ',
+    emisionesdif: '-275,000 ',
+    ruta: '1,291.14 ',
+    rutadif: '-322.86 '
+
   };
 
   kpisModeloA = {
-  totalOrders: 1225,
-  orderChange: 4.5,
-  avgDeliveryTime: 2.3,
-  avgDeliveryChange: 0.2,
-  onTime: 93.4,
-  onTimeChange: -0.5,
-  delayed: 6.6,
-  delayedChange: 0.9,
-  centros: 11
+    totalOrders: 3000,
+    avgDeliveryTime: 1.4,
+    onTime: 98.6,
+    delayed: 1.4,
+    centros: 1,
+    kilometros: '18,200 ',
+    kilometrosdif: '0 ',
+    gasolina: '65,500 ',
+    gasolinadif: '0 ',
+    co2: '6,600 ',
+    emisionesdif: '0 ',
+    ruta: '812 ',
+    rutadif: '0 '
 };
 
 kpisModeloB = {
-  totalOrders: 1190,
-  orderChange: -0.5,
-  avgDeliveryTime: 2.0,
-  avgDeliveryChange: 0.0,
-  onTime: 94.8,
-  onTimeChange: 0.4,
-  delayed: 5.2,
-  delayedChange: -0.4,
-  centros: 13
+    totalOrders: '30,000 ',
+    avgDeliveryTime: 1.6,
+    onTime: 97.9,
+    delayed: 2.1,
+    centros: 3,
+    kilometros: '162, 000 ',
+    kilometrosdif: '0 ',
+    gasolina: '585,000 ',
+    gasolinadif: '0 ',
+    co2: '59,000 ',
+    emisionesdif: '0 ',
+    ruta: '795 ',
+    rutadif: '0 '
 };
 
   resumenKpi: any = null;
@@ -138,7 +162,7 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
 
   ngOnInit(): void {
     this.setSection(this.activeSection);
-    if (this.tipoCentro === 'Nuevos') this.cargarCentros();
+    if (this.tipoCentro === 'Antiguos') this.cargarCentros();
   }
 
   ngAfterViewInit(): void {
@@ -150,6 +174,7 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
     this.activeSection = section;
     setTimeout(() => {
       if (section === 'dashboard') {
+        this.tipoCentro = 'Antiguos';
         this.cargarDatos();
         this.initializeMap();
       } else if (section === 'dashboard-nacional') {

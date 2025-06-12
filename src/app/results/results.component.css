@@ -124,6 +124,31 @@ thead.sticky-top th {
   border-radius: 1rem;
 }
 
+.card-kpi {
+  padding: 10px !important;
+  min-height: 100px;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card-kpi h6 {
+  font-size: 0.7rem;
+  margin-bottom: 4px;
+}
+
+.card-kpi h3 {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+.card-kpi small {
+  font-size: 0.65rem;
+  line-height: 1;
+}
+
+
 /* KPI cards */
 .card h6 {
   font-size: 0.8rem;
