@@ -23,7 +23,7 @@ export class ResultsComponent implements AfterViewInit, OnInit {
 
   map!: mapboxgl.Map;
   mapNacional!: mapboxgl.Map;
-  mapStyle: 'antes' | 'despues' = 'antes';
+  mapStyle: 'antes' | 'despues' | 'modeloA' | 'modeloB' = 'antes';
   selectedFeatureProps: any = null;
 
   kpisAntes = {
@@ -48,6 +48,30 @@ export class ResultsComponent implements AfterViewInit, OnInit {
     delayedChange: 2.1,
     centros: 7
   };
+
+  kpisModeloA = {
+  totalOrders: 1225,
+  orderChange: 4.5,
+  avgDeliveryTime: 2.3,
+  avgDeliveryChange: 0.2,
+  onTime: 93.4,
+  onTimeChange: -0.5,
+  delayed: 6.6,
+  delayedChange: 0.9,
+  centros: 11
+};
+
+kpisModeloB = {
+  totalOrders: 1190,
+  orderChange: -0.5,
+  avgDeliveryTime: 2.0,
+  avgDeliveryChange: 0.0,
+  onTime: 94.8,
+  onTimeChange: 0.4,
+  delayed: 5.2,
+  delayedChange: -0.4,
+  centros: 13
+};
 
   resumenKpi: any = null;
 
@@ -134,17 +158,37 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
     }, 0);
   }
 
-  cambiarEstiloMapa(estilo: 'antes' | 'despues'): void {
-    this.mapStyle = estilo;
-    this.resumenKpi = estilo === 'antes' ? this.kpisAntes : this.kpisDespues;
-    setTimeout(() => {
-      const container = document.getElementById('mapNacional');
-      if (container) {
-        if (this.mapNacional) this.mapNacional.remove();
-        this.initializeMapNacional();
-      }
-    }, 100);
+
+cambiarEstiloMapa(estilo: 'antes' | 'despues' | 'modeloA' | 'modeloB'): void {
+  this.mapStyle = estilo;
+
+  // Asignar el resumenKPI correspondiente
+  switch (estilo) {
+    case 'antes':
+      this.resumenKpi = this.kpisAntes;
+      break;
+    case 'despues':
+      this.resumenKpi = this.kpisDespues;
+      break;
+    case 'modeloA':
+      this.resumenKpi = this.kpisModeloA;
+      break;
+    case 'modeloB':
+      this.resumenKpi = this.kpisModeloB;
+      break;
   }
+
+  // Actualizar mapa
+  setTimeout(() => {
+    const container = document.getElementById('mapNacional');
+    if (container) {
+      if (this.mapNacional) this.mapNacional.remove();
+      this.initializeMapNacional();
+    }
+  }, 100);
+}
+
+
 
   onFiltroChange(): void {
     this.cargarDatos();
@@ -193,7 +237,7 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
           borderWidth: 2
         };
       });
-      if (this.tipoCentro === 'Nuevos' && this.visualizacion === 'Agrupadas' && this.centroEspecifico === 'Todos') {
+      if (this.tipoCentro === 'Nuevos' && this.visualizacion === 'Agrupadas') {
         Object.entries(promedios).forEach(([grupo, promedio]: any) => {
           datasets.push({
           label: `Promedio ${grupo}: $${promedio.toFixed(0)}`,
@@ -232,7 +276,7 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
 
           borderWidth: 1.5
         });
-        if (this.tipoCentro === 'Nuevos' && this.visualizacion === 'Agrupadas' && this.centroEspecifico === 'Todos') {
+        if (this.tipoCentro === 'Nuevos' && this.visualizacion === 'Agrupadas') {
           datasets.push({
             label: `Promedio ${grupo}: ${promedio.toFixed(0)} km`,
             data: [
@@ -273,7 +317,7 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
         };
       });
       
-      if (this.tipoCentro === 'Nuevos' && this.visualizacion === 'Agrupadas' && this.centroEspecifico === 'Todos') {
+      if (this.tipoCentro === 'Nuevos' && this.visualizacion === 'Agrupadas') {
         Object.entries(promedios).forEach(([tipo, promedio]: any) => {
           datasets.push({
             label: `Promedio ${tipo}: ${promedio.toFixed(0)} kg`,
@@ -319,19 +363,30 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
     });
   }
 
-  initializeMapNacional(): void {
-    mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
-    const styleAntes = 'mapbox://styles/nataliagquintanilla/cmbaaszy401aw01qy84dyhja7';
-    const styleDespues = 'mapbox://styles/nataliagquintanilla/cmbadahuh009h01qoe5taeykn';
-    const styleToUse = this.mapStyle === 'antes' ? styleAntes : styleDespues;
-    this.mapNacional = new mapboxgl.Map({
-      container: 'mapNacional',
-      style: styleToUse,
-      center: [-102.5528, 23.6345],
-      zoom: 4.5,
-      attributionControl: false
-    });
+ initializeMapNacional(): void {
+  mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
+
+  let styleToUse = '';
+  if (this.mapStyle === 'antes') {
+    styleToUse = 'mapbox://styles/nataliagquintanilla/cmbaaszy401aw01qy84dyhja7';
+  } else if (this.mapStyle === 'despues') {
+    styleToUse = 'mapbox://styles/nataliagquintanilla/cmbadahuh009h01qoe5taeykn';
+  } else if (this.mapStyle === 'modeloA') {
+    styleToUse = 'mapbox://styles/nataliagquintanilla/cmblfn9mi000001ruc2bc84io';
+  } else if (this.mapStyle === 'modeloB') {
+    styleToUse = 'mapbox://styles/nataliagquintanilla/cmblfzus200ee01s9cde6am1w';
   }
+
+  this.mapNacional = new mapboxgl.Map({
+    container: 'mapNacional',
+    style: styleToUse,
+    center: [-102.5528, 23.6345],
+    zoom: 4.5,
+    attributionControl: false
+  });
+}
+
+
 
   private colorHex(grupo: string): string {
     const hash = [...grupo].reduce((acc, char) => acc + char.charCodeAt(0), 0);

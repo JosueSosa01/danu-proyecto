@@ -71,14 +71,6 @@
                 [ngClass]="{'active-btn': activeSection === 'plan'}">
           <i class="bi bi-currency-dollar me-2"></i> Plan Financiero
         </button>
-        <button (click)="setSection('estrategia')" class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
-                [ngClass]="{'active-btn': activeSection === 'estrategia'}">
-          <i class="bi bi-diagram-3 me-2"></i> Estrategia
-        </button>
-        <button (click)="setSection('conclusiones')" class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
-                [ngClass]="{'active-btn': activeSection === 'conclusiones'}">
-          <i class="bi bi-journal-check me-2"></i> Conclusiones
-        </button>
       </li>
     </ul>
   </div>
@@ -108,15 +100,17 @@
           <div class="d-flex align-items-center justify-content-start flex-wrap gap-1 w-100">
             <strong class="small mb-0" style="white-space: nowrap;">Centro:</strong>
             <div class="form-check form-check-inline mb-0">
-              <input class="form-check-input" type="radio" name="tipoCentro" id="nuevos" value="Nuevos"
-                    [(ngModel)]="tipoCentro" (change)="onFiltroChange()">
-              <label class="form-check-label small" for="nuevos">Nuevos</label>
-            </div>
-            <div class="form-check form-check-inline mb-0">
               <input class="form-check-input" type="radio" name="tipoCentro" id="viejos" value="Viejos"
                     [(ngModel)]="tipoCentro" (change)="onFiltroChange()">
               <label class="form-check-label small" for="viejos">Antiguos</label>
             </div>
+
+            <div class="form-check form-check-inline mb-0">
+              <input class="form-check-input" type="radio" name="tipoCentro" id="nuevos" value="Nuevos"
+                    [(ngModel)]="tipoCentro" (change)="onFiltroChange()">
+              <label class="form-check-label small" for="nuevos">Nuevos</label>
+            </div>
+            
           </div>
         </div>
 
@@ -169,7 +163,7 @@
       <div class="row g-3">
         <div class="col-md-6">
           <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100">
-            <div class="card-header bg-white fw-bold">Mapa de Centros - Nuevo León</div>
+            <div class="card-header bg-white fw-bold">Mapa de centros - Nuevo León</div>
             <div class="card-body p-0">
               <div id="map" style="height: 300px; width: 100%;"></div>
             </div>
@@ -227,46 +221,50 @@
 
     <!-- DASHBOARD NACIONAL -->
     <div *ngIf="activeSection === 'dashboard-nacional'" class="container-fluid px-0">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <h3 class="fw-bold mb-0">Centros de Distribución Nacional</h3>
-          <p class="text-muted small mb-0">Visualización a nivel nacional.</p>
-        </div>
-        <div>
-          <button class="btn btn-outline-primary me-2" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
-          <button class="btn btn-outline-secondary" (click)="setSection('dashboard')">Ver NL</button>
-        </div>
-      </div>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3 class="fw-bold mb-0">Centros de Distribución Nacional</h3>
+      <p class="text-muted small mb-0">Visualización a nivel nacional.</p>
+    </div>
+    <div>
+      <button class="btn btn-outline-primary me-2" (click)="setSection('dashboard-nacional')">Ver Nacional</button>
+      <button class="btn btn-outline-secondary" (click)="setSection('dashboard')">Ver NL</button>
+    </div>
+  </div>
 
-      <div class="row g-3 mb-3" *ngIf="resumenKpi">
-        <div class="col-md-2 col-sm-6" *ngFor="let kpi of [
-          { label: 'Total Orders', value: resumenKpi.totalOrders, change: resumenKpi.orderChange, color: 'success' },
-          { label: 'Avg Delivery Time', value: resumenKpi.avgDeliveryTime + ' días', change: resumenKpi.avgDeliveryChange, color: 'danger' },
-          { label: 'On-Time Delivery', value: resumenKpi.onTime + '%', change: resumenKpi.onTimeChange, color: 'success' },
-          { label: 'Delayed Deliveries', value: resumenKpi.delayed + '%', change: resumenKpi.delayedChange, color: 'danger' },
-          { label: 'Distribution Centers', value: resumenKpi.centros, change: '+1 new center', color: 'success' }
-        ]">
-          <div class="card text-center shadow-sm p-3 border-0 rounded-4">
-            <h6 class="text-muted">{{ kpi.label }}</h6>
-            <h3 class="fw-bold text-{{ kpi.color }}">{{ kpi.value }}</h3>
-            <small class="text-{{ kpi.color }}">{{ kpi.change }}</small>
-          </div>
-        </div>
-      </div>
-
-      <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-          <span>Red de distribución</span>
-          <div class="btn-group">
-            <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'antes'" (click)="cambiarEstiloMapa('antes')">Antes</button>
-            <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'despues'" (click)="cambiarEstiloMapa('despues')">Después</button>
-          </div>
-        </div>
-        <div class="card-body p-0">
-          <div id="mapNacional" style="height: 320px; width: 100%;"></div>
-        </div>
+  <div class="row g-3 mb-3" *ngIf="resumenKpi">
+    <div class="col-md-2 col-sm-6" *ngFor="let kpi of [
+      { label: 'Total Orders', value: resumenKpi.totalOrders, change: resumenKpi.orderChange, color: 'success' },
+      { label: 'Avg Delivery Time', value: resumenKpi.avgDeliveryTime + ' días', change: resumenKpi.avgDeliveryChange, color: 'danger' },
+      { label: 'On-Time Delivery', value: resumenKpi.onTime + '%', change: resumenKpi.onTimeChange, color: 'success' },
+      { label: 'Delayed Deliveries', value: resumenKpi.delayed + '%', change: resumenKpi.delayedChange, color: 'danger' },
+      { label: 'Distribution Centers', value: resumenKpi.centros, change: '+1 new center', color: 'success' }
+    ]">
+      <div class="card text-center shadow-sm p-3 border-0 rounded-4">
+        <h6 class="text-muted">{{ kpi.label }}</h6>
+        <h3 class="fw-bold text-{{ kpi.color }}">{{ kpi.value }}</h3>
+        <small class="text-{{ kpi.color }}">{{ kpi.change }}</small>
       </div>
     </div>
+  </div>
+
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+      <span>Red de distribución</span>
+      <div class="btn-group">
+        <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'antes'" (click)="cambiarEstiloMapa('antes')">Antes</button>
+        <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'despues'" (click)="cambiarEstiloMapa('despues')">Después</button>
+        <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'modeloA'" (click)="cambiarEstiloMapa('modeloA')">Modelo A</button>
+        <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'modeloB'" (click)="cambiarEstiloMapa('modeloB')">Modelo B</button>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <div id="mapNacional" style="height: 400px; width: 100%;"></div>
+    </div>
+  </div>
+</div>
+
+
     
     <!-- PLAN FINANCIERO -->
 <!-- Sección Plan Financiero -->
