@@ -159,6 +159,8 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
       centro: this.centroEspecifico
     };
 
+    
+
     // Gráfica Gasolina
     this.http.get<any[]>(`${this.baseUrl}/charts/gasolina`, { params }).subscribe(data => {
       const grouped: any = {}, meses: Set<string> = new Set(), promedios: any = {};
@@ -181,7 +183,7 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
           borderWidth: 2
         };
       });
-      if (this.tipoCentro === 'Nuevos') {
+      if (this.tipoCentro === 'Nuevos' && this.visualizacion === 'Agrupadas' && this.centroEspecifico === 'Todos') {
         Object.entries(promedios).forEach(([grupo, promedio]: any) => {
           datasets.push({
           label: `Promedio ${grupo}: $${promedio.toFixed(0)}`,
@@ -218,7 +220,7 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
           borderColor: this.colorHex(grupo),
           borderWidth: 1.5
         });
-        if (this.tipoCentro === 'Nuevos') {
+        if (this.tipoCentro === 'Nuevos' && this.visualizacion === 'Agrupadas' && this.centroEspecifico === 'Todos') {
           datasets.push({
             label: `Promedio ${grupo}: ${promedio.toFixed(0)} km`,
             data: [
@@ -239,11 +241,12 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
     // Gráfica CO2
     this.http.get<any[]>(`${this.baseUrl}/charts/co2`, { params }).subscribe(data => {
       const grouped: any = {}, meses: Set<string> = new Set(), promedios: any = {};
-      data.forEach(d => {
-        if (!grouped[d.tipo_centro]) grouped[d.tipo_centro] = {};
-        grouped[d.tipo_centro][d.mes] = d.co2_emitido;
+       data.forEach(d => {
+        if (!grouped[d.grupo]) grouped[d.grupo] = {};  // ✅ CAMBIA A 'grupo'
+        grouped[d.grupo][d.mes] = d.co2_emitido;
         meses.add(d.mes);
       });
+
       const ordenMeses = ['Jan 2018','Feb 2018','Mar 2018','Apr 2018','May 2018','Jun 2018'];
       const labels = ordenMeses.filter(m => meses.has(m));
       const datasets = Object.entries(grouped).map(([tipo, values]: any) => {
@@ -256,7 +259,8 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
           backgroundColor: tipo === 'Nuevos' ? '#36A2EB' : '#4BC0C0'
         };
       });
-      if (this.tipoCentro === 'Nuevos') {
+      
+      if (this.tipoCentro === 'Nuevos' && this.visualizacion === 'Agrupadas' && this.centroEspecifico === 'Todos') {
         Object.entries(promedios).forEach(([tipo, promedio]: any) => {
           datasets.push({
             label: `Promedio ${tipo}: ${promedio.toFixed(0)} kg`,
