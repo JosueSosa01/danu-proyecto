@@ -19,7 +19,7 @@
     }
 
     .sidebar {
-      background-color: #1d1d1d;
+      background-color: #030456;
       display: flex;
       flex-direction: column;
       width: 220px;
@@ -52,7 +52,7 @@
     <div class="mb-3">
       <input type="text" class="form-control bg-secondary text-white border-0" placeholder="Search...">
     </div>
-    <small class="text-muted text-uppercase">Navigation</small>
+    <small class="text-muted text-uppercase"></small>
     <ul class="nav flex-column mt-2">
       <li class="nav-item">
         <button (click)="setSection('dashboard')" class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
@@ -140,19 +140,29 @@
           </select>
         </div>
 
-        <!-- KPIs -->
-        <div *ngFor="let kpi of [
-          { label: 'Kilómetros recorridos', value: resumenKpi.km },
-          { label: 'Emisiones de CO₂', value: resumenKpi.co2 },
-          { label: 'Gasto gasolina', value: resumenKpi.gasto },
-          { label: 'Costo promedio por ruta', value: resumenKpi.promedio },
-          { label: 'Total de rutas', value: resumenKpi.totalRutas }
-        ]" class="card shadow-sm border-0 rounded-4 px-2 py-2 text-center" style="width: 150px; height: 70px;">
-          <div class="text-muted small">{{ kpi.label }}</div>
-          <div class="fw-bold text-primary fs-6">{{ kpi.value }}</div>
-        </div>
 
       </div>
+
+     <!-- KPIs -->
+    <!-- KPIs -->
+      <div class="row g-3">
+        <div *ngFor="let kpi of [
+          { label: 'Kilómetros recorridos', value: resumenKpi.km, diff: resumenKpiComparado[0]?.diferencia, icon: 'bi-arrow-down' },
+          { label: 'Emisiones de CO₂', value: resumenKpi.co2, diff: resumenKpiComparado[1]?.diferencia, icon: 'bi-arrow-down' },
+          { label: 'Gasto gasolina', value: resumenKpi.gasto, diff: resumenKpiComparado[2]?.diferencia, icon: 'bi-arrow-up' },
+          { label: 'Costo promedio por ruta', value: resumenKpi.promedio, diff: resumenKpiComparado[3]?.diferencia, icon: 'bi-arrow-down' },
+          { label: 'Total de rutas', value: resumenKpi.totalRutas, diff: resumenKpiComparado[4]?.diferencia, icon: 'bi-arrow-down' }
+        ]" class="card shadow-sm border-0 rounded-4 px-2 py-2 text-center mx-2" style="width: 170px; height: 90px;">
+          <div class="text-muted small">{{ kpi.label }}</div>
+          <div class="fw-bold text-dark fs-6">{{ kpi.value }}</div>
+          <div *ngIf="tipoCentro === 'Nuevos' && centroEspecifico === 'Todos'" class="text-success small d-flex justify-content-center align-items-center gap-1">
+            <i [class]="'bi ' + kpi.icon"></i>
+            <span>{{ kpi.diff }}</span>
+          </div>
+        </div>
+      </div>
+
+
 
 
       <!-- Mapa + Gasolina -->
@@ -167,7 +177,7 @@
         </div>
         <div class="col-md-6">
           <div class="card shadow-sm border-0 rounded-4 h-100">
-            <div class="card-header bg-white fw-bold">Costo de Gasolina por centro</div>
+            <div class="card-header bg-white fw-bold">Costo total de gasolina mensual</div>
             <div class="card-body">
               <canvas baseChart
                       [data]="lineChartDataGasolina"
@@ -183,19 +193,7 @@
       <!-- CO₂ + Distancia -->
       <!-- CO₂ + Distancia -->
       <div class="row g-3">
-        <div class="col-md-6">
-          <div class="card shadow-sm border-0 rounded-4 h-100">
-            <div class="card-header bg-white fw-bold">Emisiones de CO₂ por Mes</div>
-            <div class="card-body">
-              <canvas baseChart
-                      [data]="barChartDataCo2"
-                      [labels]="barChartLabelsCo2"
-                      [type]="'bar'"
-                      [options]="{ responsive: true }">
-              </canvas>
-            </div>
-          </div>
-        </div>
+
         <div class="col-md-6">
           <div class="card shadow-sm border-0 rounded-4 h-100">
             <div class="card-header bg-white fw-bold">Distribución de distancia recorrida</div>
@@ -204,6 +202,20 @@
                       [data]="areaChartDataDistancia"
                       [type]="'line'"
                       [options]="lineChartOptionsDistancia">
+              </canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-header bg-white fw-bold">Emisiones mensuales de CO₂</div>
+            <div class="card-body">
+              <canvas baseChart
+                      [data]="barChartDataCo2"
+                      [labels]="barChartLabelsCo2"
+                      [type]="'bar'"
+                      [options]="{ responsive: true }">
               </canvas>
             </div>
           </div>

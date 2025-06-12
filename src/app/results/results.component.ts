@@ -51,6 +51,14 @@ export class ResultsComponent implements AfterViewInit, OnInit {
 
   resumenKpi: any = null;
 
+  resumenKpiComparado: any[] = [
+    { diferencia: '62,822 km reducidos' },
+    { diferencia: '21,901 kg evitados' },
+    { diferencia: '$269,834 ahorrados' },
+    { diferencia: '$1174.93 por ruta' },
+    { diferencia: '40 rutas menos' }
+  ];
+
   barChartLabelsCo2: string[] = [];
   barChartDataCo2 = {
     labels: [] as string[],
@@ -179,7 +187,9 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
           label: grupo,
           data: valores,
           fill: false,
-          borderColor: this.colorHex(grupo),
+          borderColor: grupo === 'Nuevos' ? '#2caefc' : '#030456',
+          backgroundColor: grupo === 'Nuevos' ? '#2caefc' : '#030456',
+
           borderWidth: 2
         };
       });
@@ -190,7 +200,8 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
           data: labels.map(() => promedio),
           type: 'line', // <- TS se queja porque no lo espera aquí
           borderDash: [8, 4],
-          borderColor: this.colorHex(grupo),
+          borderColor: grupo === 'Nuevos' ? '#2caefc' : '#030456',
+          backgroundColor: grupo === 'Nuevos' ? '#2caefc' : '#030456',
           pointRadius: 0,
           fill: false,
         } as any); // <-- Esto elimina el error
@@ -216,8 +227,9 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
           label: grupo,
           data: [{ x: 0, y: 0 }, ...puntos],
           fill: 'origin',
-          backgroundColor: this.colorRGBA(grupo, 0.3),
-          borderColor: this.colorHex(grupo),
+          backgroundColor: grupo === 'Nuevos' ? 'rgba(49, 196, 254, 0.36)' : 'rgba(6, 34, 249, 0.46)',
+          borderColor: grupo === 'Nuevos' ? '#2caefc' : '#030456',
+
           borderWidth: 1.5
         });
         if (this.tipoCentro === 'Nuevos' && this.visualizacion === 'Agrupadas' && this.centroEspecifico === 'Todos') {
@@ -229,7 +241,8 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
             ],
             type: 'line',
             borderDash: [8, 4],
-            borderColor: this.colorHex(grupo),
+            backgroundColor: grupo === 'Nuevos' ? '#2caefc' : '#030456',
+            borderColor: grupo === 'Nuevos' ? '#2caefc' : '#030456',
             pointRadius: 0,
             fill: false
           });
@@ -256,7 +269,7 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
         return {
           label: tipo,
           data: valores,
-          backgroundColor: tipo === 'Nuevos' ? '#36A2EB' : '#4BC0C0'
+          backgroundColor: tipo === 'Nuevos' ? '#2caefc' : '#030456',
         };
       });
       
@@ -267,7 +280,8 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
             type: 'line',
             data: labels.map(() => promedio),
             borderDash: [8, 4],
-            borderColor: tipo === 'Nuevos' ? '#36A2EB' : '#4BC0C0',
+            borderColor: tipo === 'Nuevos' ? '#2caefc' : '#030456',
+            backgroundColor: tipo === 'Nuevos' ? '#2caefc' : '#030456',
             pointRadius: 0,
             fill: false
           } as any);
@@ -287,6 +301,8 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
       promedio: data['Costo promedio por ruta'],
       totalRutas: data['Total de rutas']
     };
+
+    
 });
 
   }
@@ -305,8 +321,8 @@ lineChartOptionsDistancia: ChartConfiguration<'line'>['options'] = {
 
   initializeMapNacional(): void {
     mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YWxpYWdxdWludGFuaWxsYSIsImEiOiJjbWI5eHlrOHUxODV1MmxwdDc2bnpha3VwIn0.2DeML5PLho772mJkGuhXzg';
-    const styleAntes = 'mapbox://styles/nataliagquintanilla/cmblfn9mi000001ruc2bc84io';
-    const styleDespues = 'mapbox://styles/nataliagquintanilla/cmblfzus200ee01s9cde6am1w';
+    const styleAntes = 'mapbox://styles/nataliagquintanilla/cmbaaszy401aw01qy84dyhja7';
+    const styleDespues = 'mapbox://styles/nataliagquintanilla/cmbadahuh009h01qoe5taeykn';
     const styleToUse = this.mapStyle === 'antes' ? styleAntes : styleDespues;
     this.mapNacional = new mapboxgl.Map({
       container: 'mapNacional',
