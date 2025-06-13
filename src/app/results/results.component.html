@@ -59,6 +59,7 @@
                 [ngClass]="{'active-btn': activeSection === 'dashboard'}">
           <i class="bi bi-speedometer2 me-2"></i> Dashboards
         </button>
+        <!--
         <button (click)="setSection('bases')" class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
                 [ngClass]="{'active-btn': activeSection === 'bases'}">
           <i class="bi bi-archive me-2"></i> Bases de Datos
@@ -67,6 +68,8 @@
                 [ngClass]="{'active-btn': activeSection === 'rutas'}">
           <i class="bi bi-signpost-split me-2"></i> Rutas
         </button>
+
+      -->
         <button (click)="setSection('plan')" class="nav-link w-100 text-start mb-2 d-flex align-items-center sidebar-btn"
                 [ngClass]="{'active-btn': activeSection === 'plan'}">
           <i class="bi bi-currency-dollar me-2"></i> Plan Financiero
@@ -259,8 +262,8 @@
       <div class="btn-group">
         <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'antes'" (click)="cambiarEstiloMapa('antes')">Antes</button>
         <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'despues'" (click)="cambiarEstiloMapa('despues')">Después</button>
-        <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'modeloA'" (click)="cambiarEstiloMapa('modeloA')">Modelo A</button>
-        <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'modeloB'" (click)="cambiarEstiloMapa('modeloB')">Modelo B</button>
+        <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'modeloA'" (click)="cambiarEstiloMapa('modeloA')">Septiembre 2016</button>
+        <button class="btn btn-sm btn-outline-secondary" [class.active]="mapStyle === 'modeloB'" (click)="cambiarEstiloMapa('modeloB')">Noviembre 2016</button>
       </div>
     </div>
     <div class="card-body p-0">
